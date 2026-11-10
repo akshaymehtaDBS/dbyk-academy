@@ -103,6 +103,16 @@ html{margin:0}body{margin:0}
 .timer .qbar{flex:1}.timer.low{color:var(--bad)}.timer.low .qbar i{background:var(--bad)}
 .review{display:flex;flex-direction:column;gap:12px}
 .review .item{border-left:4px solid var(--bad);padding:2px 0 2px 12px;display:flex;flex-direction:column;gap:4px}
+
+.acc{width:100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;text-align:left;cursor:pointer;
+  background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;min-height:56px;font:inherit}
+.acc:hover{border-color:var(--accent)}
+.acc[aria-expanded="true"]{border-color:var(--accent)}
+.accname{font-family:var(--display);font-weight:600;font-size:1.1rem}
+.segs{display:inline-flex}
+.chev{color:var(--muted);transition:transform .15s}
+.acc[aria-expanded="true"] .chev{transform:rotate(180deg)}
+@media (prefers-reduced-motion: reduce){.chev{transition:none}}
 </style></head>
 <body>
 <div class="wrap">
@@ -691,6 +701,7 @@ const MAX_POINTS=Object.values(QUIZZES).reduce((s,q)=>s+q.size,0);
 
 /* ---------- state ---------- */
 let me=null, people=[], results={}, quiz=null, booted=false, note="", tick=null;
+let openTrack=null; try{openTrack=localStorage.getItem("dbyk-academy-open")||null;}catch(e){}
 const canPlay=()=>!!me&&PLAY_ROLES.indexOf(me.role)>=0;
 function entry(u,q){return results[u+"_"+q]||{user_id:u,quiz:q,read:false,best:null,attempts:0};}
 function passed(u,q){const e=entry(u,q);return e.best!==null&&e.best>=passMark(QUIZZES[q].size);}
@@ -760,12 +771,15 @@ function homeHtml(){
   const done=LESSONS.filter(l=>passed(me.id,l.id)).length;
   let h=`<div class="stack"><div class="panel stack"><p class="eyebrow">${esc(me.store||(me.role==="owner"?"Owner":""))}</p>
     <h1>${esc(me.name)}, ${done===LESSONS.length?"every lesson is passed":"learn it, then prove it"}</h1>
-    <p class="muted">${done} of ${LESSONS.length} lessons passed · ${points(me.id)} of ${MAX_POINTS} points. Read a lesson, then take its quiz. You need every answer right to pass. If you fail, the quiz locks until you read the lesson again.</p>
+    <p class="muted">${done} of ${LESSONS.length} lessons passed · ${points(me.id)} of ${MAX_POINTS} points. Pick a course below, read a lesson, then take its quiz. You need every answer right to pass. If you fail, the quiz locks until you read the lesson again.</p>
     ${canPlay()?"":`<p class="err">This login can read the lessons, but quizzes are open to store managers and owners only.</p>`}</div>`;
   TRACKS.forEach(t=>{
     const ls=lessonsOf(t.id), nPass=ls.filter(l=>passed(me.id,l.id)).length, ch="ch-"+t.id, chOpen=canPlay()&&nPass===ls.length;
-    h+=`<section class="track"><div class="trackhead"><h2>${esc(t.name)}</h2>
-      <div class="meta"><div class="segs" aria-hidden="true">${ls.map(l=>`<i class="seg ${passed(me.id,l.id)?"on":""}"></i>`).join("")}</div><span class="sm muted">${nPass} of ${ls.length} passed</span></div></div><div class="rows">`;
+    const isOpen=openTrack===t.id;
+    h+=`<section class="track"><button class="acc" id="acc-${t.id}" data-track="${t.id}" aria-expanded="${isOpen}" aria-controls="rows-${t.id}">
+      <span class="accname">${esc(t.name)}</span>
+      <span class="meta"><span class="segs" aria-hidden="true">${ls.map(l=>`<i class="seg ${passed(me.id,l.id)?"on":""}"></i>`).join("")}</span><span class="sm muted">${nPass} of ${ls.length} passed</span><span class="chev" aria-hidden="true">▾</span></span></button>
+      <div class="rows" id="rows-${t.id}" ${isOpen?"":"hidden"}>`;
     ls.forEach(l=>{
       const canQuiz=canPlay()&&entry(me.id,l.id).read;
       h+=`<div class="row"><div class="info"><span class="title">${esc(l.title)}</span>
@@ -899,6 +913,8 @@ document.addEventListener("submit",async ev=>{
 });
 document.addEventListener("click",async ev=>{
   const b=ev.target.closest("button"); if(!b)return;
+  if(b.dataset.track){openTrack=openTrack===b.dataset.track?null:b.dataset.track;try{localStorage.setItem("dbyk-academy-open",openTrack||"");}catch(e){}
+    const y=window.scrollY;app.innerHTML=homeHtml();window.scrollTo(0,y);const nb=document.getElementById("acc-"+b.dataset.track);if(nb)nb.focus({preventScroll:true});return;}
   if(b.id==="signout"){await sb.auth.signOut();me=null;results={};people=[];location.hash="home";render();return;}
   if(b.id==="start-quiz"){const id=b.dataset.quiz;if(!entry(me.id,id).read)record(id,{read:true});quiz=null;go("quiz-"+id);return;}
   if(b.dataset.opt!==undefined&&quiz&&!quiz.done){answer(Number(b.dataset.opt));return;}
