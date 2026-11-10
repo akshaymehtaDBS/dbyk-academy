@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>D Byk Product Academy</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Layout: one reading column (max 760px). Home is a list of lesson rows grouped by category; lesson and quiz are single-focus screens. */
+:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#131A2A; --muted:#566178; --line:#D9DEE8;
+  --accent:#1F4FD8; --accent-ink:#FFFFFF; --accent-soft:#E6ECFC;
+  --good:#17804A; --good-soft:#E2F4EA; --bad:#C0352B; --bad-soft:#FBE7E5; --warn:#9A5B00; --warn-soft:#FBEFD9;
+  --display:"Space Grotesk","Segoe UI",system-ui,sans-serif;
+  --body:"Inter","Segoe UI",system-ui,sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0F131C; --surface:#181E2B; --ink:#E9ECF3; --muted:#9BA5B9; --line:#2B3345;
+  --accent:#86A6FF; --accent-ink:#0F131C; --accent-soft:#1E2A4A;
+  --good:#5CC88A; --good-soft:#15301F; --bad:#FF8377; --bad-soft:#3A1B18; --warn:#F0B354; --warn-soft:#33270F;
+  color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0F131C; --surface:#181E2B; --ink:#E9ECF3; --muted:#9BA5B9; --line:#2B3345;
+  --accent:#86A6FF; --accent-ink:#0F131C; --accent-soft:#1E2A4A;
+  --good:#5CC88A; --good-soft:#15301F; --bad:#FF8377; --bad-soft:#3A1B18; --warn:#F0B354; --warn-soft:#33270F;
+  color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:20px 56px}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:1.7rem;font-weight:700} h2{font-size:1.25rem;font-weight:600} h3{font-size:1.05rem;font-weight:600}
+p{margin:0}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.top{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.brand{font-family:var(--display);font-weight:700;font-size:1.05rem;color:var(--ink);text-decoration:none}
+.brand span{color:var(--accent)}
+.nav{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:600 .95rem var(--body);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--r);
+  padding:10px 14px;min-height:44px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.small{min-height:38px;padding:6px 12px;font-size:.88rem}
+.btn[aria-disabled="true"],.btn:disabled{opacity:.5;cursor:not-allowed}
+.eyebrow{font:600 .75rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)} .sm{font-size:.88rem}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.picker .btn{flex-direction:column;align-items:flex-start;gap:0;padding:12px 14px}
+.picker small{font-weight:400;color:var(--muted)}
+.track{display:flex;flex-direction:column;gap:10px}
+.trackhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 12px}
+.segs{display:flex;gap:4px} .seg{width:22px;height:6px;border-radius:3px;background:var(--line)} .seg.on{background:var(--good)}
+.rows{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.row{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:space-between;padding:14px 16px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row .info{min-width:0;flex:1 1 240px;display:flex;flex-direction:column;gap:4px}
+.row .title{font-weight:600}
+.row .acts{display:flex;gap:8px;flex-wrap:wrap}
+.row.challenge{background:var(--accent-soft)}
+.pill{display:inline-block;font:600 .75rem var(--body);padding:3px 9px;border-radius:999px;background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.pill.good{background:var(--good-soft);color:var(--good);border-color:transparent}
+.pill.warn{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.pill.open{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.lesson{display:flex;flex-direction:column;gap:16px}
+.lesson .body{display:flex;flex-direction:column;gap:14px;max-width:66ch}
+.lesson .body ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.lesson .body h3{margin-top:8px}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+tr:first-child th,tr:first-child td{border-top:0}
+th{font:600 .75rem var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.takeaways{background:var(--accent-soft);border-radius:var(--r);padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.takeaways ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.quiz{display:flex;flex-direction:column;gap:16px}
+.qbar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.qbar i{display:block;height:100%;background:var(--accent);transition:width .25s}
+@media (prefers-reduced-motion: reduce){.qbar i{transition:none}}
+.question{font-family:var(--display);font-size:1.2rem;font-weight:600;line-height:1.3}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{font:500 1rem var(--body);text-align:left;background:var(--surface);color:var(--ink);border:1.5px solid var(--line);border-radius:var(--r);
+  padding:13px 14px;min-height:48px;cursor:pointer;width:100%}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default;opacity:1;color:var(--ink)}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.why{border-left:4px solid var(--line);padding:4px 0 4px 12px}
+.why.ok{border-color:var(--good)} .why.no{border-color:var(--bad)}
+.score{font-family:var(--display);font-size:2.6rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.note{font-size:.85rem;color:var(--muted)}
+.you{color:var(--accent);font-weight:600}
+html{margin:0}body{margin:0}
+[hidden]{display:none!important}
+.field{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:.9rem}
+.field input{font:400 1rem var(--body);padding:11px 12px;border:1.5px solid var(--line);border-radius:var(--r);background:var(--surface);color:var(--ink);min-height:46px}
+.err{color:var(--bad);font-weight:600}
+.timer{display:flex;align-items:center;gap:10px;font-variant-numeric:tabular-nums;font-weight:600}
+.timer .qbar{flex:1}.timer.low{color:var(--bad)}.timer.low .qbar i{background:var(--bad)}
+.review{display:flex;flex-direction:column;gap:12px}
+.review .item{border-left:4px solid var(--bad);padding:2px 0 2px 12px;display:flex;flex-direction:column;gap:4px}
+</style></head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="#home">D Byk <span>Product Academy</span></a>
+    <nav class="nav" id="nav"></nav>
+  </header>
+  <main id="app"><p class="muted">Loading…</p></main>
+  <p class="note" id="sync"></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const TRACKS=[
+  {id:"road",name:"Road bikes"},
+  {id:"hybrid",name:"Hybrids"},
+  {id:"mtb",name:"Mountain bikes"},
+  {id:"frameset",name:"Framesets"},
+  {id:"tt",name:"TT and triathlon bikes"}
+];
+const PRICE_NOTE=`<p class="note">Prices are our website listings in November 2026. They change, so check the site before you quote.</p>`;
+
+const LESSONS=[
+/* ---------------- ROAD ---------------- */
+{id:"road-types",track:"road",title:"Race, aero, endurance, gravel: telling them apart",mins:5,
+body:`
+<p>Every drop-bar bike on our floor is built for one kind of riding. Before you talk price, find out how the customer rides. Then you know which shelf to walk to.</p>
+<div class="scroll"><table>
+<tr><th>Type</th><th>Position</th><th>Built for</th><th>In our range</th></tr>
+<tr><td><b>Race all-rounder</b></td><td>Low and long</td><td>Climbing, fast group rides, racing</td><td>Merida Scultura, Cannondale SuperSix EVO, Pinarello F, Argon 18 Sum</td></tr>
+<tr><td><b>Aero</b></td><td>Low and long, deep tube shapes</td><td>Speed on flat roads, racing</td><td>Trek Madone, Merida Reacto, Look 795 Blade</td></tr>
+<tr><td><b>Endurance</b></td><td>Taller front, shorter reach</td><td>Long days, rough roads, first road bike</td><td>Trek Domane, Cannondale Synapse, Merida Scultura Endurance, Pinarello X, Look 765 Optimum, Giant Contend AR, Ridley Fenix, Argon 18 Krypton</td></tr>
+<tr><td><b>Gravel</b></td><td>Upright, tyres of 38 mm and wider</td><td>Broken roads, trails, bikepacking</td><td>Trek Checkpoint, Cannondale Topstone, Kona Rove and Libre</td></tr>
+<tr><td><b>Touring</b></td><td>Upright, rack mounts everywhere</td><td>Loaded long-distance travel</td><td>Kona Sutra, Marin Four Corners</td></tr>
+</table></div>
+<h3>Stack and reach</h3>
+<p>Two numbers explain the position. <b>Stack</b> is how tall the front of the bike is. <b>Reach</b> is how far forward the rider stretches. An endurance bike has more stack and less reach, so the rider sits more upright with less load on the back, neck and hands. A race bike has less stack and more reach, so the rider is lower and more aerodynamic.</p>
+<h3>Things to know about our range</h3>
+<ul>
+<li>The current Trek Madone (Gen 8) replaced both the older Madone and the Émonda. It is Trek's one race bike now: aero and light together.</li>
+<li>Pinarello uses letters: <b>F</b> models are race bikes, <b>X</b> models are endurance bikes.</li>
+<li>Merida has three road families: <b>Reacto</b> (aero), <b>Scultura</b> (light race), <b>Scultura Endurance</b> (comfort).</li>
+<li>Gravel bikes look like road bikes but take much wider tyres. Do not sell a race bike to someone who wants to ride dirt roads.</li>
+</ul>
+<h3>On the shop floor</h3>
+<p>For a first road bike or a weekend rider doing 50 to 100 km, start with endurance. Move to race or aero only when the customer talks about racing, fast group rides, or already rides in a low position comfortably.</p>`,
+takeaways:["Ask how they ride before you ask the budget.","Endurance means more stack and less reach: a more upright, comfortable position.","Madone and Reacto are aero. Domane, Synapse and Scultura Endurance are endurance.","Gravel and touring bikes are for rough roads and loads, not for speed on tarmac."],
+quiz:[
+{"q": "A customer rides 80 km every Sunday and gets neck and lower-back pain on his race bike. Which geometry change will help most?", "a": ["More stack and less reach", "Less stack and more reach", "Same stack with more reach", "A deeper aero frame"], "why": "More stack and less reach put the rider more upright, which unloads the neck and back. That is endurance geometry."},
+{"q": "Which pair are both aero road bikes?", "a": ["Trek Madone and Merida Reacto", "Trek Domane and Merida Reacto", "Merida Scultura Endurance and Trek Madone", "Cannondale Synapse and Look 795 Blade"], "why": "Madone and Reacto are aero. Domane, Scultura Endurance and Synapse are endurance bikes."},
+{"q": "Which of these is NOT an endurance bike?", "a": ["Argon 18 Sum", "Argon 18 Krypton", "Ridley Fenix", "Giant Contend AR"], "why": "The Sum is Argon 18's race bike. Krypton, Fenix and Contend AR are endurance bikes."},
+{"q": "A customer loved his old Trek Émonda and asks for the current model. What do you tell him?", "a": ["The Madone Gen 8 replaced both the Émonda and the older Madone", "The Émonda is now called the Domane", "The Checkpoint is the new Émonda", "The Émonda is unchanged and still current"], "why": "The Madone Gen 8 is Trek's one race bike now, combining low weight and aero shaping."},
+{"q": "A customer wants to ride tarmac out of the city, then dirt roads with bags, on 40 mm tyres. Which bike fits?", "a": ["Trek Checkpoint or Cannondale Topstone", "Merida Reacto", "Pinarello F series", "Look 795 Blade"], "why": "That is gravel riding. Race and aero bikes do not take tyres that wide."},
+{"q": "A customer asks what separates a Pinarello F1 from a Pinarello X1. What is the correct answer?", "a": ["F1 has race geometry, X1 has endurance geometry", "F1 is aluminium, X1 is carbon", "F1 has rim brakes, X1 has disc brakes", "They are the same bike in different colours"], "why": "Pinarello F models are race bikes and X models are endurance bikes."},
+{"q": "Two bikes have the same stack, but bike B has 15 mm more reach. How does the rider sit on bike B?", "a": ["Stretched further forward", "More upright", "Higher at the front", "Closer to the handlebar"], "why": "Reach is how far forward the rider stretches. More reach means a longer, lower position."},
+{"q": "A customer plans a three-week loaded tour with front and rear racks. Which bike do you show?", "a": ["Kona Sutra", "Merida Scultura", "Trek Madone", "Cannondale SuperSix EVO"], "why": "The Sutra is a touring bike with rack mounts. The others are race bikes."}
+]},
+
+{id:"road-frames",track:"road",title:"Frame material, brakes and tyres",mins:5,
+body:`
+<h3>Aluminium or carbon</h3>
+<ul>
+<li><b>Aluminium</b> is tough and costs less. It is a little heavier and passes more road vibration to the rider. Most aluminium road bikes come with a carbon fork to soften the front.</li>
+<li><b>Carbon</b> is lighter. The maker can make it stiff where power goes in and softer where comfort matters. It costs more and needs care: tighten bolts with a torque wrench and have the frame checked after a crash.</li>
+</ul>
+<h3>Reading the model name</h3>
+<div class="scroll"><table>
+<tr><th>Brand</th><th>How to read it</th></tr>
+<tr><td>Trek</td><td><b>AL</b> is aluminium. <b>SL</b> is carbon. <b>SLR</b> is Trek's top carbon.</td></tr>
+<tr><td>Merida</td><td>Numbers in the hundreds (100 to 400) are aluminium. Numbers in the thousands (4000 and up) are carbon.</td></tr>
+<tr><td>Cannondale</td><td><b>CAAD</b> is aluminium. SuperSix EVO is always carbon. <b>LAB71</b> is the top tier.</td></tr>
+</table></div>
+<p>Examples from our site: Merida Scultura Endurance 300 is aluminium, Scultura Endurance 4000 is carbon. Trek Domane AL 5 is aluminium, Domane SL 5 is carbon.</p>
+<h3>Disc or rim brakes</h3>
+<ul>
+<li><b>Disc brakes</b> stop the same way in rain and dry, which matters in monsoon. They also leave room for wider tyres. Almost every new road bike is disc.</li>
+<li><b>Hydraulic</b> discs use fluid: light lever feel and strong braking. <b>Mechanical</b> discs use a cable: cheaper, more hand effort.</li>
+<li><b>Rim brakes</b> are lighter and cheaper. We still list some, like the Merida Scultura Rim 100. Rim brake wheels and disc wheels cannot be swapped between bikes.</li>
+</ul>
+<h3>Tyres</h3>
+<p>28 to 32 mm is normal on a road bike now. A wider tyre at lower pressure gives more comfort and grip, and on real roads it is not slower. Endurance bikes take the widest tyres: the Trek Domane clears up to 38 mm.</p>`,
+takeaways:["Trek AL is aluminium, SL and SLR are carbon.","Merida hundreds are aluminium, thousands are carbon.","Disc brakes work the same in rain and allow wider tyres.","Rim brake wheels do not fit disc brake bikes."],
+quiz:[
+{"q": "Which list contains only aluminium bikes?", "a": ["Trek Domane AL 5, Merida Scultura Endurance 300, Cannondale CAAD Optimo 4", "Trek Domane SL 5, Merida Scultura 4000, Cannondale CAAD Optimo 4", "Trek Domane AL 2, Merida Reacto 4000, Cannondale SuperSix EVO 4", "Trek Madone SL 5, Merida Scultura Rim 100, Cannondale CAAD Optimo 4"], "why": "AL, Merida hundreds and CAAD are aluminium. SL, Merida thousands and SuperSix EVO are carbon."},
+{"q": "A customer wants to reuse his rim brake carbon wheels on a new Merida Scultura Endurance 400, which is a disc bike. What do you tell him?", "a": ["They will not fit. Rim brake wheels cannot be used on a disc bike", "They fit if the brake pads are changed", "They fit on the rear only", "They fit with thru-axle adapters"], "why": "Rim and disc wheels are not interchangeable. He needs disc wheels, or a rim brake model."},
+{"q": "Why do most aluminium road bikes come with a carbon fork?", "a": ["To soften vibration at the front and save weight", "To allow rim brakes", "To make the bike aero", "To fit a suspension unit"], "why": "Aluminium passes more vibration to the rider. A carbon fork takes the edge off."},
+{"q": "A mechanic is tightening the seatpost clamp on a carbon frame. What is the right way?", "a": ["Use a torque wrench and tighten to the stated value", "Tighten as hard as possible so it never slips", "Tighten by feel, the same as steel", "Leave it loose so the carbon can flex"], "why": "Carbon can crack if over-tightened. Always use a torque wrench."},
+{"q": "A customer with a weak grip wants braking that takes little hand effort. Which brake type do you recommend?", "a": ["Hydraulic disc", "Mechanical disc", "Rim brake", "Any, they all feel the same"], "why": "Hydraulic discs use fluid, so the lever is light and the braking strong."},
+{"q": "A customer wants to run 35 mm tyres on a Trek Domane for bad roads. What is correct?", "a": ["They fit. The Domane clears up to 38 mm", "They do not fit. The limit is 28 mm", "They fit only on the rim brake version", "They fit only on the front wheel"], "why": "The Domane takes tyres up to 38 mm."},
+{"q": "A carbon bike has been in a crash. Nothing looks damaged and the customer wants to keep riding. What do you advise?", "a": ["Have the frame checked before riding it again", "Carry on, carbon damage is always visible", "Add more air to the tyres", "Replace only the bar tape"], "why": "Carbon can be damaged without it showing. Get the frame inspected after a crash."},
+{"q": "Which statement about rim brakes is true?", "a": ["They are lighter and cheaper, but brake less well in the wet", "They brake better than discs in the rain", "They allow wider tyres than discs", "Their wheels can be swapped onto disc bikes"], "why": "Rim brakes save weight and money. Discs win in wet weather and on tyre clearance."}
+]},
+
+{id:"road-groupsets",track:"road",title:"Groupsets and gearing",mins:6,
+body:`
+<p>The groupset is the shifters, derailleurs, crank, cassette, chain and brakes. It is the biggest reason two bikes with the same frame have different prices.</p>
+<h3>Shimano road ladder</h3>
+<div class="scroll"><table>
+<tr><th>Groupset</th><th>Gears</th><th>Shifting</th></tr>
+<tr><td>Claris</td><td>2 x 8</td><td>Mechanical</td></tr>
+<tr><td>Sora</td><td>2 x 9</td><td>Mechanical</td></tr>
+<tr><td>Tiagra</td><td>2 x 10</td><td>Mechanical</td></tr>
+<tr><td>105</td><td>2 x 12</td><td>Mechanical or Di2</td></tr>
+<tr><td>Ultegra</td><td>2 x 12</td><td>Di2 only</td></tr>
+<tr><td>Dura-Ace</td><td>2 x 12</td><td>Di2 only</td></tr>
+</table></div>
+<p><b>Di2</b> is Shimano's electronic shifting. <b>GRX</b> is Shimano's gravel groupset.</p>
+<h3>SRAM road ladder</h3>
+<p>Apex, Rival, Force, Red, from entry to top. <b>AXS</b> means wireless electronic shifting. So "Rival AXS" is the Rival level with wireless electronic shifting.</p>
+<h3>Di2 and AXS are not the same</h3>
+<ul>
+<li>Shimano Di2: the shifters are wireless and run on small coin cells, but both derailleurs are wired to one rechargeable battery inside the frame. That one battery is what the rider charges.</li>
+<li>SRAM AXS: fully wireless. Each derailleur has its own clip-on battery, so there are two to charge.</li>
+</ul>
+<h3>What the customer gets as they move up</h3>
+<p>More gears with smaller jumps between them, lighter parts, crisper shifting and better brakes. Shimano 105 is where most keen riders stop: it has the same 12 gears as the top groupsets at a much lower price.</p>
+<h3>Gearing in plain words</h3>
+<ul>
+<li>Front chainrings: <b>50/34</b> is called compact. <b>52/36</b> is semi-compact and suits stronger riders.</li>
+<li>Rear cassette: written as smallest to biggest cog, like <b>11-34</b>. A bigger last number means an easier climbing gear.</li>
+<li>The easiest gear is small ring in front, biggest cog at the back. With 34 front and 34 rear the wheel turns once for each pedal turn. That is a good ghat gear.</li>
+</ul>`,
+takeaways:["Claris, Sora, Tiagra, 105, Ultegra, Dura-Ace: low to high.","12-speed Ultegra and Dura-Ace are Di2 only. 105 comes mechanical or Di2.","SRAM: Apex, Rival, Force, Red. AXS means wireless electronic.","A bigger biggest-cog (like 34) makes climbing easier."],
+quiz:[
+{"q": "How many rear cogs do Claris, Tiagra and 105 have, in that order?", "a": ["8, 10, 12", "8, 9, 10", "9, 10, 11", "10, 11, 12"], "why": "Claris is 2x8, Sora 2x9, Tiagra 2x10 and 105 is 2x12."},
+{"q": "A customer wants current 12-speed Ultegra with mechanical cable shifting. What do you tell him?", "a": ["12-speed Ultegra is Di2 only. For mechanical 12-speed, look at 105", "Every Ultegra bike can be ordered mechanical", "Mechanical Ultegra exists only with rim brakes", "Ultegra is a gravel groupset"], "why": "Ultegra and Dura-Ace are Di2 only. 105 comes in mechanical and Di2."},
+{"q": "Which chainring and cog combination is the easiest gear for a steep climb?", "a": ["34 front, 34 rear", "34 front, 28 rear", "36 front, 30 rear", "50 front, 34 rear"], "why": "Divide front by rear. 34/34 is 1.0, the lowest ratio here. 36/30 is 1.2 and 34/28 is 1.21."},
+{"q": "A strong racer who rides mostly on flat roads asks which chainrings suit him. What do you suggest?", "a": ["52/36 semi-compact", "50/34 compact", "34/34", "A single 34 ring"], "why": "52/36 has bigger rings for stronger riders. 50/34 is the easier, climbing-friendly option."},
+{"q": "A customer buying a Shimano Di2 bike asks what he has to charge. What is correct?", "a": ["One battery inside the frame, which powers both derailleurs", "A separate battery on each derailleur", "Nothing, Di2 has no battery", "Only the shifters, every week"], "why": "Di2 derailleurs share one internal rechargeable battery. Separate batteries on each derailleur is SRAM AXS."},
+{"q": "Which list shows SRAM's road groupsets from entry to top?", "a": ["Apex, Rival, Force, Red", "Rival, Apex, Force, Red", "Apex, Force, Rival, Red", "Red, Force, Rival, Apex"], "why": "Apex, Rival, Force, Red."},
+{"q": "A customer is choosing between 105 Di2 and Ultegra Di2 on the same frame. What does Ultegra add?", "a": ["Lighter parts and a slightly crisper feel, with the same 12 gears", "Two more gears", "Fully wireless derailleurs", "A much wider gear range"], "why": "Both are 12-speed Di2. Moving up buys lower weight and refinement, not more gears."},
+{"q": "What is Shimano GRX?", "a": ["Shimano's gravel groupset", "Shimano's entry road groupset", "Shimano's wireless system", "Shimano's track groupset"], "why": "GRX is built for gravel bikes."}
+]},
+
+{id:"road-trek",track:"road",title:"The Trek road ladder",mins:6,
+body:`
+<p>We are the authorised Trek dealer for Pune, so every one of us should be able to walk a customer up the Trek range without looking it up.</p>
+<h3>How a Trek name works</h3>
+<ul>
+<li><b>Family</b>: Domane is endurance. Madone is race. Checkpoint is gravel.</li>
+<li><b>Letters</b>: AL is aluminium, SL is carbon, SLR is top carbon.</li>
+<li><b>Number</b>: the parts level. Higher number, better groupset and wheels.</li>
+<li><b>Gen</b>: the frame generation. Gen 4 is newer than Gen 3.</li>
+</ul>
+<h3>Domane (endurance)</h3>
+<div class="scroll"><table>
+<tr><th>Model</th><th>Frame</th><th>Groupset</th><th class="num">Listed from</th></tr>
+<tr><td>Domane AL 2</td><td>Aluminium</td><td>Shimano Claris</td><td class="num">₹98,699</td></tr>
+<tr><td>Domane AL 4</td><td>Aluminium</td><td>Shimano Tiagra</td><td class="num">₹1,45,999</td></tr>
+<tr><td>Domane AL 5</td><td>Aluminium</td><td>Shimano 105</td><td class="num">₹1,79,999</td></tr>
+<tr><td>Domane SL 5</td><td>Carbon</td><td>Shimano 105</td><td class="num">₹2,34,999</td></tr>
+<tr><td>Domane SL 6</td><td>Carbon</td><td>Shimano 105 Di2</td><td class="num">₹2,79,199</td></tr>
+</table></div>
+<p>The carbon Domane SL has <b>IsoSpeed</b> at the seat tube, which lets the seat tube flex to take the sting out of rough roads. The aluminium Domane AL does not have IsoSpeed. A model with AXS in the name, like Domane SL 6 AXS, uses SRAM Rival AXS instead of Shimano.</p>
+<h3>Madone (race)</h3>
+<div class="scroll"><table>
+<tr><th>Model</th><th>Frame</th><th>Groupset</th><th class="num">Listed from</th></tr>
+<tr><td>Madone SL 5</td><td>Carbon</td><td>Shimano 105 mechanical</td><td class="num">₹3,20,199</td></tr>
+<tr><td>Madone SL 6</td><td>Carbon</td><td>Shimano 105 Di2</td><td class="num">₹4,35,499</td></tr>
+<tr><td>Madone SL 7</td><td>Carbon</td><td>Shimano Ultegra Di2</td><td class="num">₹5,51,199</td></tr>
+<tr><td>Madone SLR 7</td><td>Top carbon</td><td>Shimano Ultegra Di2</td><td class="num">₹7,77,299</td></tr>
+</table></div>
+<p>The Madone Gen 8 has <b>IsoFlow</b>: the opening under the saddle where the seat tube splits. It improves airflow, saves weight and adds some comfort. SL 7 and SLR 7 share the groupset. The extra money for SLR buys the lighter top-grade carbon frame.</p>
+${PRICE_NOTE}
+<h3>Two things to say to every Trek customer</h3>
+<ul>
+<li>Trek frames carry a lifetime warranty for the first owner. Register the bike in the customer's name.</li>
+<li>Many Trek bikes are ordered in from Trek and are not on our floor. Check availability before you promise a delivery date.</li>
+</ul>`,
+takeaways:["Domane is endurance, Madone is race, Checkpoint is gravel.","AL 2 Claris, AL 4 Tiagra, AL 5 105. Then carbon starts at SL.","IsoSpeed is on the carbon Domane. IsoFlow is on the Madone.","Confirm Trek availability before promising a date."],
+quiz:[
+{"q": "Which line shows the correct groupsets for the Domane AL range?", "a": ["AL 2 Claris, AL 4 Tiagra, AL 5 105", "AL 2 Tiagra, AL 4 105, AL 5 Ultegra", "AL 2 Sora, AL 4 Tiagra, AL 5 105 Di2", "AL 2 Claris, AL 4 105, AL 5 Ultegra"], "why": "AL 2 is Claris, AL 4 is Tiagra, AL 5 is 105."},
+{"q": "Madone SL 7 and Madone SLR 7 both have Ultegra Di2. What does the extra money for SLR buy?", "a": ["A lighter, top-grade carbon frame", "A better groupset", "Wider tyres", "A different brake type"], "why": "At the same number the parts level is the same. SLR is the top carbon frame."},
+{"q": "A customer has ₹2,00,000 and wants a Trek road bike with Shimano 105. Which model fits the budget?", "a": ["Domane AL 5", "Domane SL 5", "Madone SL 5", "Domane SL 6"], "why": "Domane AL 5 has 105 and is listed at ₹1,79,999. Domane SL 5 starts at ₹2,34,999."},
+{"q": "Which is the lowest-priced Trek road bike in the lesson with electronic shifting?", "a": ["Domane SL 6", "Madone SL 5", "Domane SL 5", "Madone SL 6"], "why": "Domane SL 6 has 105 Di2 from ₹2,79,199. Madone SL 5 and Domane SL 5 are mechanical."},
+{"q": "What groupset is on a Domane SL 6 AXS?", "a": ["SRAM Rival AXS", "Shimano 105 Di2", "Shimano Ultegra Di2", "SRAM Red AXS"], "why": "AXS in a Trek name means SRAM. At level 6 it is Rival AXS."},
+{"q": "Which statement is correct?", "a": ["IsoSpeed is on the carbon Domane. IsoFlow is the opening in the Madone's seat tube", "IsoFlow is on the Domane. IsoSpeed is on the Madone", "Both are on the Domane AL", "Both are names for Trek's electronic shifting"], "why": "IsoSpeed is the Domane SL comfort feature. IsoFlow is the Madone Gen 8 seat tube opening."},
+{"q": "A customer wants a Domane AL 5 and asks for IsoSpeed. What do you tell him?", "a": ["The aluminium Domane AL does not have IsoSpeed. It starts with the carbon Domane SL", "Every Domane has IsoSpeed", "IsoSpeed can be added later as an accessory", "IsoSpeed is only on the Madone"], "why": "IsoSpeed is on the carbon Domane SL, not on the AL."},
+{"q": "What is the difference between Madone SL 5 and Madone SL 6?", "a": ["SL 5 has mechanical 105. SL 6 has 105 Di2", "SL 5 is aluminium. SL 6 is carbon", "SL 5 has rim brakes. SL 6 has discs", "SL 6 has the SLR frame"], "why": "Same carbon frame. The step up is from mechanical 105 to electronic 105 Di2."}
+]},
+
+/* ---------------- HYBRID ---------------- */
+{id:"hybrid-basics",track:"hybrid",title:"What a hybrid is and who it is for",mins:4,
+body:`
+<p>A hybrid has a flat handlebar like a mountain bike and fast 700c wheels like a road bike. The rider sits upright and can see traffic. It is quicker than a mountain bike on tarmac and easier to handle than a road bike.</p>
+<h3>Two families</h3>
+<div class="scroll"><table>
+<tr><th>Family</th><th>What it has</th><th>Best for</th><th>In our range</th></tr>
+<tr><td><b>Fitness hybrid</b></td><td>Rigid fork, lighter, tyres around 32 to 40 mm</td><td>Fitness rides, commuting, tarmac</td><td>Trek FX, Cannondale Quick, Merida Speeder, Giant Escape, Marin Fairfax, Kona Dew, Polygon Path</td></tr>
+<tr><td><b>Dual sport</b></td><td>Front suspension fork, wider tyres</td><td>Mixed tarmac and rough paths</td><td>Cannondale Quick CX, Polygon Heist X</td></tr>
+</table></div>
+<h3>Who buys a hybrid</h3>
+<ul>
+<li>Someone getting back into cycling for fitness.</li>
+<li>A commuter riding 5 to 20 km each way.</li>
+<li>A rider who wants one bike for weekday errands and weekend 30 to 40 km rides.</li>
+</ul>
+<h3>The most common mistake</h3>
+<p>Customers ask for a mountain bike because "the roads are bad". For city riding a hybrid with 38 to 40 mm tyres handles potholes well and is much faster and lighter. A suspension fork adds weight and needs service. At entry prices a rigid fork with wider tyres is usually the better ride. Ask where they will ride before agreeing to an MTB.</p>
+<h3>Where a hybrid stops</h3>
+<p>When a hybrid owner starts doing 50 km and longer rides regularly and wants more speed, the next step is an endurance road bike like the Domane. When they want real trails, it is a mountain bike.</p>`,
+takeaways:["Hybrid means flat bar, 700c wheels, upright position.","Fitness hybrids have a rigid fork. Dual sport hybrids have a suspension fork.","For city roads, a hybrid usually beats a mountain bike.","Regular long, fast rides are the sign to move to an endurance road bike."],
+quiz:[
+{"q": "Which combination describes a fitness hybrid?", "a": ["Flat bar, rigid fork, 700c wheels, tyres around 32 to 40 mm", "Drop bar, rigid fork, 25 mm tyres", "Flat bar, suspension fork and rear shock", "Aero bars and a steep seat tube"], "why": "A fitness hybrid is a flat-bar bike with a rigid fork and road-size wheels."},
+{"q": "A customer rides only in the city and wants an MTB because the roads are bad. What is the best response?", "a": ["Ask about his riding, then show a hybrid with 38 to 40 mm tyres as the faster, lighter choice", "Agree and sell the heaviest MTB", "Tell him hybrids cannot handle potholes", "Show him a race bike"], "why": "For city use a hybrid with wider tyres copes with rough roads and is much quicker."},
+{"q": "What separates a Cannondale Quick CX from a Cannondale Quick?", "a": ["The Quick CX has a front suspension fork and wider tyres", "The Quick CX has a drop bar", "The Quick CX has a carbon frame", "The Quick CX has no gears"], "why": "Quick is the rigid fitness hybrid. Quick CX is the dual sport version."},
+{"q": "Why is a suspension fork often the wrong choice on an entry-level hybrid?", "a": ["It adds weight and needs service, and wider tyres on a rigid fork often ride better", "It makes the bike illegal on roads", "It stops the brakes from working", "It makes the tyres narrower"], "why": "Entry suspension forks are heavy and need upkeep."},
+{"q": "A hybrid owner now rides 70 km every weekend with a group and wants more speed. What is the next bike?", "a": ["An endurance road bike such as the Trek Domane", "A dual sport hybrid", "A full-suspension MTB", "A track frameset"], "why": "Regular long, fast rides are where an endurance road bike makes sense."},
+{"q": "Which of these is NOT a hybrid?", "a": ["Kona Sutra", "Giant Escape", "Marin Fairfax", "Merida Speeder"], "why": "The Sutra is a drop-bar touring bike. The other three are fitness hybrids."},
+{"q": "A customer commutes 12 km each way on good tarmac and wants speed with little maintenance. What do you show first?", "a": ["A fitness hybrid with a rigid fork", "A dual sport hybrid with a suspension fork", "A full-suspension MTB", "A TT bike"], "why": "On tarmac a rigid fitness hybrid is lighter, faster and has less to service."},
+{"q": "A customer mixes tarmac with canal paths and broken village roads. Which family suits him?", "a": ["Dual sport, such as Cannondale Quick CX or Polygon Heist X", "An aero road bike", "A track bike", "A TT bike"], "why": "Dual sport hybrids have a suspension fork and wider tyres for mixed surfaces."}
+]},
+
+{id:"hybrid-specs",track:"hybrid",title:"Hybrid specs that change the ride",mins:5,
+body:`
+<p>Two hybrids can look the same and be ₹40,000 apart. These are the parts that explain the gap.</p>
+<h3>Brakes</h3>
+<ul>
+<li><b>Mechanical disc</b>: worked by a cable. Cheaper, needs more hand effort and regular adjustment. Example: Trek FX 1 Disc.</li>
+<li><b>Hydraulic disc</b>: worked by fluid. Light lever, strong braking, adjusts itself as pads wear. Example: Trek FX 3.</li>
+</ul>
+<h3>Fork</h3>
+<p>Entry hybrids have a steel or aluminium fork. Better ones, like the FX 3, have a <b>carbon fork</b>. It is lighter and takes road buzz out of the handlebar.</p>
+<h3>Drivetrain</h3>
+<ul>
+<li><b>3x</b> (three front rings): older style, many gears overlap.</li>
+<li><b>2x</b>: wide range, common on entry and mid hybrids.</li>
+<li><b>1x</b> (one front ring): one shifter, no front derailleur, less to go wrong. The FX 3 uses a 1x10 setup.</li>
+</ul>
+<p>More gears does not mean more speed. What matters is the range from the easiest gear to the hardest. A 1x10 with a wide cassette covers nearly everything a city rider needs.</p>
+<h3>Frame</h3>
+<p>Almost every hybrid is aluminium. The exception in our range is the <b>Trek FX Sport</b>, which has a carbon frame and is Trek's fastest flat-bar bike.</p>
+<h3>Mounts and tyres</h3>
+<ul>
+<li>Ask commuters about carrying a bag and riding in rain. Check the frame has rack and mudguard mounts.</li>
+<li>Tyres from 32 to 40 mm. Wider is more comfortable on broken roads.</li>
+</ul>
+<h3>With every hybrid</h3>
+<p>Helmet, front and rear lights, a lock, bottle cage, floor pump, and mudguards before monsoon. Offer them at the time of sale, not later.</p>`,
+takeaways:["Hydraulic discs: lighter lever, stronger, self-adjusting.","Carbon fork: lighter and smoother at the handlebar.","1x means one front ring and one shifter. Gear range matters more than gear count.","FX Sport is the carbon-frame hybrid."],
+quiz:[
+{"q": "What do hydraulic disc brakes give over mechanical disc brakes?", "a": ["A lighter lever, stronger braking and self-adjustment as pads wear", "A lower price", "A cable that is easier to replace", "Better braking only in dry weather"], "why": "Hydraulic brakes use fluid. Mechanical discs use a cable and need regular adjustment."},
+{"q": "A customer says a 3x8 bike with 24 gears must be faster than a 1x10. What is correct?", "a": ["Gear count does not decide speed. Range matters, and many 3x gears overlap", "More gears always means more speed", "A 1x bike cannot climb", "A 3x bike has no overlapping gears"], "why": "A wide-range 1x covers most needs with simpler shifting."},
+{"q": "What does the carbon fork on a Trek FX 3 do?", "a": ["Cuts weight and road buzz at the handlebar", "Adds suspension travel", "Adds gears", "Makes the brakes stronger"], "why": "A carbon fork is lighter and absorbs vibration. It is not suspension."},
+{"q": "Which Trek flat-bar bike has a carbon frame?", "a": ["FX Sport", "FX 3", "FX 1 Disc", "Marlin 5"], "why": "FX Sport has the carbon frame. FX 3 has a carbon fork on an aluminium frame."},
+{"q": "A commuter will carry a laptop bag and ride through monsoon. What must you check on the frame?", "a": ["Rack and mudguard mounts", "Aero bar mounts", "Dropper post routing", "A rear shock mount"], "why": "Commuters need to fit a rack and mudguards."},
+{"q": "What does stepping up from Trek FX 1 Disc to FX 3 add?", "a": ["Hydraulic disc brakes, a carbon fork and a 1x10 drivetrain", "A suspension fork and a rear shock", "A carbon frame and drop bar", "Nothing, only the colour differs"], "why": "FX 1 Disc has mechanical discs. FX 3 has hydraulic discs, a carbon fork and 1x10."},
+{"q": "What does a 1x drivetrain remove from the bike?", "a": ["The front derailleur and its shifter", "The rear derailleur", "The cassette", "The chain"], "why": "1x means one front ring, so there is no front derailleur or left shifter."},
+{"q": "A customer buys his first hybrid in early June. Which add-on is the most time-sensitive?", "a": ["Mudguards, before the monsoon", "A second saddle", "Aero bars", "A dropper post"], "why": "Offer mudguards before the rain starts, at the time of sale."}
+]},
+
+/* ---------------- MTB ---------------- */
+{id:"mtb-types",track:"mtb",title:"Hardtail, full suspension and riding styles",mins:5,
+body:`
+<h3>Hardtail or full suspension</h3>
+<ul>
+<li><b>Hardtail</b>: suspension fork in front, rigid rear. Lighter, cheaper, less to service, and efficient on climbs.</li>
+<li><b>Full suspension</b>: fork plus a rear shock. More grip, control and comfort on rough ground. Costs more, weighs more, and the shock and pivots need service.</li>
+</ul>
+<h3>Riding styles and travel</h3>
+<p>Travel is how far the suspension moves. More travel is not "better". It is for rougher, steeper riding and makes the bike slower on climbs.</p>
+<div class="scroll"><table>
+<tr><th>Style</th><th>Typical travel</th><th>Built for</th><th>In our range</th></tr>
+<tr><td><b>Cross-country (XC)</b></td><td>100 to 120 mm</td><td>Climbing, speed, racing</td><td>Trek Procaliber and Supercaliber, Cannondale Scalpel and Scalpel HT, Polygon Siskiu D</td></tr>
+<tr><td><b>Trail</b></td><td>120 to 150 mm</td><td>All-round riding, ups and downs</td><td>Polygon Siskiu T, Merida One-Twenty, Kona Honzo</td></tr>
+<tr><td><b>Enduro</b></td><td>150 to 180 mm</td><td>Steep, rough descents</td><td>Polygon Collosus N</td></tr>
+</table></div>
+<h3>Our hardtails</h3>
+<p>Trek Marlin and Procaliber, Merida Big Nine, Polygon Cascade, Premier and Xtrada, Kona Mahuna, Kahuna, Fire Mountain, Cinder Cone and Honzo, Cannondale Scalpel HT. Most MTBs we sell are hardtails.</p>
+<h3>On the shop floor</h3>
+<ul>
+<li>Ask where they will actually ride. If the answer is only city roads, a hybrid is usually the better bike.</li>
+<li>For a first mountain bike on fire roads and easy trails, a hardtail is the right call.</li>
+<li>Show full suspension when the customer already rides trails and wants more control on descents.</li>
+</ul>`,
+takeaways:["Hardtail: front suspension only. Lighter, cheaper, simpler.","Full suspension: more control on rough ground, more cost and service.","XC 100 to 120 mm, trail 120 to 150 mm, enduro 150 to 180 mm.","More travel is for rougher riding, not a quality score."],
+quiz:[
+{"q": "Compared with a full-suspension bike, what is true of a hardtail?", "a": ["It is lighter, climbs efficiently and has less to service", "It has more grip on rough descents", "It has a rear shock", "It always costs more"], "why": "A hardtail has front suspension only. Lighter, cheaper, simpler."},
+{"q": "A bike has 160 mm of travel front and rear. Which riding style is it built for?", "a": ["Enduro", "Cross-country", "Commuting", "Trail"], "why": "Enduro bikes run about 150 to 180 mm."},
+{"q": "A bike has 130 mm of travel. Which style does that match?", "a": ["Trail", "Cross-country racing", "Enduro", "Touring"], "why": "Trail bikes run about 120 to 150 mm."},
+{"q": "Which pair are both cross-country full-suspension bikes?", "a": ["Trek Supercaliber and Cannondale Scalpel", "Trek Marlin and Cannondale Scalpel HT", "Polygon Collosus N and Kona Honzo", "Merida Big Nine and Polygon Xtrada"], "why": "Supercaliber and Scalpel are XC full-suspension bikes. Scalpel HT, Marlin, Honzo, Big Nine and Xtrada are hardtails."},
+{"q": "Which of these is a full-suspension trail bike?", "a": ["Polygon Siskiu T", "Trek Marlin 5", "Merida Big Nine 100", "Kona Mahuna"], "why": "The Siskiu T is a full-suspension trail bike. The others are hardtails."},
+{"q": "A customer says more travel always means a better bike. What is right?", "a": ["More travel suits rougher, steeper riding and costs efficiency on climbs", "More travel is faster everywhere", "Travel has nothing to do with riding style", "Less travel is only for kids bikes"], "why": "Travel should match the terrain."},
+{"q": "A customer asks for a mountain bike and says he will ride only on city roads. What do you do?", "a": ["Explain that a hybrid is usually the better bike for that, and show one", "Sell the longest-travel bike in stock", "Show a TT bike", "Refuse to sell him a bike"], "why": "Ask where they will ride. City-only riders are usually better served by a hybrid."},
+{"q": "Which pair are both hardtails?", "a": ["Kona Kahuna and Polygon Xtrada", "Polygon Siskiu D and Polygon Xtrada", "Cannondale Scalpel and Trek Marlin", "Merida One-Twenty and Merida Big Nine"], "why": "Kahuna and Xtrada are hardtails. Siskiu D, Scalpel and One-Twenty are full suspension."}
+]},
+
+{id:"mtb-parts",track:"mtb",title:"Wheels, forks, drivetrains and brakes",mins:6,
+body:`
+<h3>Wheel size</h3>
+<ul>
+<li><b>29 inch</b> rolls over rocks and roots more easily and holds speed. It is the standard for adults.</li>
+<li><b>27.5 inch</b> is quicker to turn and suits smaller riders.</li>
+<li>Merida tells you in the name: <b>Big Nine</b> is 29, <b>Big Seven</b> is 27.5. Kona and Polygon listings say 29ER or 27.5ER.</li>
+<li>Trek Marlin matches wheel size to frame size, so smaller frames come with smaller wheels.</li>
+</ul>
+<h3>Fork</h3>
+<ul>
+<li><b>Coil fork</b>: a steel spring inside. Heavier and basic. Found on entry bikes.</li>
+<li><b>Air fork</b>: lighter, and you set it to the rider's weight with a shock pump.</li>
+<li><b>Lockout</b>: a lever that stiffens the fork for tarmac and smooth climbs.</li>
+</ul>
+<h3>Drivetrain</h3>
+<p>Modern MTBs use <b>1x</b>: one chainring in front and a wide cassette at the back. One shifter, no front derailleur, fewer dropped chains.</p>
+<div class="scroll"><table>
+<tr><th>Brand</th><th>Ladder, entry to top</th></tr>
+<tr><td>Shimano</td><td>Tourney, Altus, Acera, Alivio, Deore, SLX, XT, XTR</td></tr>
+<tr><td>SRAM Eagle (12-speed)</td><td>SX, NX, GX, X0, XX</td></tr>
+</table></div>
+<p><b>CUES</b> is Shimano's newer family that is replacing the lower and middle groups. It is built to last longer.</p>
+<h3>Brakes and other parts</h3>
+<ul>
+<li><b>Hydraulic disc brakes</b> are the norm. Bigger rotors (180 or 203 mm) give more stopping power than 160 mm.</li>
+<li><b>Dropper post</b>: a seatpost that drops with a handlebar lever so the rider can move freely on descents.</li>
+<li><b>Tubeless</b>: no inner tube. Sealant inside closes small punctures and the tyre runs at lower pressure for grip.</li>
+<li><b>Thru-axle</b>: a thick axle that threads into the frame. Stiffer and safer than quick release.</li>
+</ul>`,
+takeaways:["Big Nine is 29 inch, Big Seven is 27.5 inch.","Air forks are lighter and adjust to rider weight. Coil forks are entry level.","Shimano: Tourney, Altus, Acera, Alivio, Deore, SLX, XT, XTR.","Dropper post, tubeless and thru-axles are the upgrades trail riders ask about."],
+quiz:[
+{"q": "A 95 kg rider and a 55 kg rider each want a fork set up for their weight. Which fork type allows that?", "a": ["An air fork, set with a shock pump", "A coil fork", "A rigid fork", "Any fork with lockout"], "why": "Air forks are tuned to rider weight with a shock pump."},
+{"q": "Which list is in the correct order from lower to higher?", "a": ["Alivio, Deore, SLX, XT", "Deore, Alivio, SLX, XT", "Alivio, SLX, Deore, XT", "XT, SLX, Deore, Alivio"], "why": "Tourney, Altus, Acera, Alivio, Deore, SLX, XT, XTR."},
+{"q": "Which SRAM Eagle groupset is the highest of these?", "a": ["GX", "NX", "SX", "They are all the same level"], "why": "The order is SX, NX, GX, X0, XX."},
+{"q": "What does a dropper post do?", "a": ["Lowers the saddle with a handlebar lever for descents", "Adds rear suspension", "Locks the fork", "Changes gear"], "why": "A dropper gets the saddle out of the way on descents."},
+{"q": "What is the benefit of tubeless tyres?", "a": ["Sealant closes small punctures and lower pressure gives more grip", "They make the wheel bigger", "They need no air", "They only work on road bikes"], "why": "Tubeless tyres seal small holes and run at lower pressure."},
+{"q": "A rider wants more stopping power for long descents. Which change helps?", "a": ["Bigger rotors, such as 180 or 203 mm", "Smaller 140 mm rotors", "A coil fork", "Narrower tyres"], "why": "A bigger rotor gives more braking power."},
+{"q": "What is Shimano CUES?", "a": ["Shimano's newer family replacing its lower and middle groups, built to last longer", "Shimano's top race groupset", "A brake fluid", "A wheel size"], "why": "CUES is replacing the lower and middle Shimano groups."},
+{"q": "What is the advantage of a 1x drivetrain on a mountain bike?", "a": ["One shifter, no front derailleur and fewer dropped chains", "More overlapping gears", "A lighter fork", "A bigger wheel"], "why": "1x is simpler and holds the chain better."}
+]},
+
+{id:"mtb-ladders",track:"mtb",title:"Reading MTB names and matching the rider",mins:6,
+body:`
+<h3>Trek</h3>
+<div class="scroll"><table>
+<tr><th>Family</th><th>What it is</th><th class="num">Listed from</th></tr>
+<tr><td>Marlin 4</td><td rowspan="3">Aluminium hardtail for new riders. A higher number brings a better fork, drivetrain and brakes.</td><td class="num">₹44,399</td></tr>
+<tr><td>Marlin 5</td><td class="num">₹58,199</td></tr>
+<tr><td>Marlin 6</td><td class="num">₹72,199</td></tr>
+<tr><td>Procaliber</td><td>XC race hardtail. Procaliber 8 is aluminium, 9.6 is carbon.</td><td class="num">₹1,59,199</td></tr>
+<tr><td>Supercaliber</td><td>XC race full suspension. The rear shock, called IsoStrut, is built into the top tube.</td><td class="num">₹4,14,899</td></tr>
+</table></div>
+<p>Trek MTB rule: a single number like 8 is aluminium. A number starting with <b>9.</b> is carbon.</p>
+<h3>Merida Big Nine</h3>
+<ul>
+<li>Aluminium range climbs 60, 100, 300, 400. Higher number, better parts.</li>
+<li><b>TR</b> models have a longer 120 mm fork and more relaxed geometry for trail riding.</li>
+<li><b>One-Twenty</b> is Merida's full-suspension trail bike.</li>
+</ul>
+<h3>Polygon</h3>
+<ul>
+<li><b>Cascade</b> and <b>Premier</b>: entry hardtails.</li>
+<li><b>Xtrada</b>: the trail-ready hardtail.</li>
+<li><b>Siskiu D</b> and <b>Siskiu T</b>: full suspension, D for cross-country, T for trail.</li>
+<li><b>Collosus</b>: the long-travel bikes.</li>
+</ul>
+${PRICE_NOTE}
+<h3>Five questions to ask</h3>
+<ul>
+<li>Where will you ride: city, fire roads, or proper trails?</li>
+<li>How often, and how far?</li>
+<li>Have you ridden trails before?</li>
+<li>What is your height? (Sets the frame size.)</li>
+<li>What is the budget, including helmet and gloves?</li>
+</ul>
+<h3>Set expectations honestly</h3>
+<p>An entry hardtail with a coil fork is good for fire roads and easy trails. It is not built for jumps and drops. Say so at the time of sale. For children we have 24 inch bikes: Trek Precaliber 24 and Polygon Cascade 24.</p>`,
+takeaways:["Trek MTB: 9.x means carbon. Marlin is the entry hardtail.","Supercaliber is full suspension with the IsoStrut shock in the top tube.","Merida TR means a 120 mm fork and trail geometry.","Polygon: Cascade and Premier entry, Xtrada trail hardtail, Siskiu full suspension."],
+quiz:[
+{"q": "What is the difference between Trek Procaliber 8 and Procaliber 9.6?", "a": ["Procaliber 8 is aluminium. Procaliber 9.6 is carbon", "Procaliber 8 is full suspension", "Procaliber 9.6 is a kids bike", "Only the colour differs"], "why": "On Trek MTBs a number starting with 9. means carbon."},
+{"q": "Where is the rear shock on a Trek Supercaliber?", "a": ["Built into the top tube, called IsoStrut", "Under the saddle", "Inside the fork", "It has no rear shock"], "why": "The Supercaliber's IsoStrut shock is part of the top tube."},
+{"q": "What does TR mean on a Merida Big Nine TR?", "a": ["A longer 120 mm fork and trail-leaning geometry", "Triathlon version", "Rim brakes", "A 27.5 inch wheel"], "why": "TR is the trail version of the Big Nine."},
+{"q": "What is the difference between Polygon Siskiu D and Siskiu T?", "a": ["D is for cross-country, T is for trail", "D is a hardtail, T is full suspension", "D is downhill, T is touring", "D is for kids, T is for adults"], "why": "Both are full suspension. D is cross-country, T is trail."},
+{"q": "A customer buying an entry hardtail with a coil fork says he wants to do big jumps. What should you do?", "a": ["Tell him it is built for fire roads and easy trails, and show bikes made for that riding", "Close the sale and say nothing", "Tell him any MTB can do anything", "Suggest a road bike"], "why": "Set expectations at the sale."},
+{"q": "A customer has ₹60,000 for a Trek mountain bike. Which is the highest model within budget?", "a": ["Marlin 5", "Marlin 6", "Marlin 4", "Procaliber 8"], "why": "Marlin 5 is listed at ₹58,199. Marlin 6 is ₹72,199."},
+{"q": "Which Polygon is the trail-ready hardtail?", "a": ["Xtrada", "Cascade", "Siskiu T", "Collosus"], "why": "Cascade and Premier are entry hardtails. Xtrada is the trail-ready hardtail. Siskiu and Collosus are full suspension."},
+{"q": "A parent wants a mountain bike for a child who needs 24 inch wheels. What do we have?", "a": ["Trek Precaliber 24 and Polygon Cascade 24", "Trek Marlin 6", "Merida Big Nine 60", "Trek Supercaliber"], "why": "Precaliber 24 and Cascade 24 are the 24 inch bikes."}
+]},
+
+/* ---------------- FRAMESETS ---------------- */
+{id:"frameset-basics",track:"frameset",title:"What a frameset is and what the customer still needs",mins:6,
+body:`
+<p>A frameset is the frame and fork, sold without the parts that make it rideable. Customers buy one to move parts over from their current bike, or to build a dream bike part by part.</p>
+<h3>What is usually in the box</h3>
+<ul>
+<li>Frame, fork and headset.</li>
+<li>Usually the seatpost, because many frames need their own shape.</li>
+<li>Sometimes the handlebar or full cockpit. The listing says so, for example "with Handlebar" or "with Cockpit". Read it before you answer.</li>
+</ul>
+<h3>What the customer still has to buy</h3>
+<p>Groupset, wheels, tyres, saddle, bottom bracket, bar tape, pedals, and often the handlebar and stem. These can cost as much as the frameset again. Say this early so the budget is real.</p>
+<h3>Compatibility checks before taking money</h3>
+<div class="scroll"><table>
+<tr><th>Check</th><th>Why it matters</th></tr>
+<tr><td>Disc or rim brake</td><td>Rim brake groupsets and wheels do not fit a disc frame, and the other way round. We list both kinds.</td></tr>
+<tr><td>Bottom bracket</td><td>Each frame takes one standard. Trek uses T47 threaded, Cervélo uses BBright, Pinarello uses Italian threaded, current Merida Reacto and Scultura use BB86 press-fit. The customer needs the bottom bracket that fits both the new frame and their crank, so a bottom bracket from the old bike usually cannot move over.</td></tr>
+<tr><td>Shifting type</td><td>Some top aero frames take electronic shifting only. Check the spec sheet before moving a mechanical groupset over.</td></tr>
+<tr><td>Seatpost and cockpit</td><td>Many are specific to that frame. A standard round post or any stem may not fit.</td></tr>
+<tr><td>Tyre clearance</td><td>The widest tyre the frame accepts.</td></tr>
+</table></div>
+<h3>Size is final</h3>
+<p>You can change a stem. You cannot change the frame size. Get the customer measured, or book a bike fit, before ordering. The fork steerer is cut to height during the build and cannot be made longer again, so cut it only after the position is settled.</p>
+<h3>Stock</h3>
+<p>Many framesets we list are held by the vendor, not in our stores. Confirm the size is in stock and the lead time before you take payment.</p>`,
+takeaways:["Frameset means frame, fork and headset. Read the listing for seatpost and cockpit.","The rest of the build can cost as much as the frameset again.","Check brake type, bottom bracket, shifting type and seatpost before selling.","Confirm size with a fit, and confirm vendor stock, before taking payment."],
+quiz:[
+{"q": "Which of these is NOT normally part of a frameset?", "a": ["Wheels", "Fork", "Headset", "Frame"], "why": "A frameset is the frame, fork and headset, and usually the seatpost."},
+{"q": "A customer wants to move his rim brake wheels and groupset to a new disc brake frameset. What do you tell him?", "a": ["They will not fit. A disc frame needs disc wheels and disc brakes", "They fit with a small adapter", "Only the wheels fit", "Rim and disc parts are interchangeable"], "why": "Rim brake and disc brake parts are not interchangeable."},
+{"q": "Which bottom bracket standard does a Cervélo frame use?", "a": ["BBright", "T47 threaded", "Italian threaded", "BB86 press-fit"], "why": "Cervélo uses BBright. Trek is T47, Pinarello is Italian threaded, Merida Reacto and Scultura are BB86."},
+{"q": "A customer is moving parts from a Trek to a Pinarello Dogma F. What is true about the bottom bracket?", "a": ["Trek is T47 and Pinarello is Italian threaded, so he needs a new bottom bracket", "Both use T47, so it moves straight over", "Both use BB86 press-fit", "Pinarello frames need no bottom bracket"], "why": "The standards differ, so the old bottom bracket cannot be reused."},
+{"q": "When should the fork steerer be cut during a build?", "a": ["Only after the riding position is settled, because it cannot be made longer again", "Before the customer has sat on the bike", "It is never cut", "Right after unboxing, to save time"], "why": "A cut steerer is permanent. Settle the position first."},
+{"q": "A customer has ₹3,00,000 in total, owns no parts, and wants a ₹2,50,000 frameset. What do you tell him?", "a": ["The remaining parts can cost as much as the frameset again, so the budget does not cover a rideable bike", "₹50,000 is plenty for the rest", "A frameset is already a complete bike", "The wheels come free with every frameset"], "why": "Groupset, wheels and finishing parts can match the frameset price."},
+{"q": "A listing says 'Frameset with Cockpit'. What does that tell you?", "a": ["The handlebar setup is included. Without those words, assume bar and stem are extra", "The wheels are included", "It is a complete bike", "It includes pedals"], "why": "Read the listing. Cockpit or handlebar is included only when the title says so."},
+{"q": "A customer wants to move a mechanical groupset onto a top aero frameset. What must you check first?", "a": ["The frame's spec sheet, because some top aero frames take electronic shifting only", "Nothing, every frame takes mechanical shifting", "Only the colour of the cables", "The tyre brand"], "why": "Some frames have no routing for mechanical cables."}
+]},
+
+{id:"frameset-map",track:"frameset",title:"The framesets we list, by purpose",mins:5,
+body:`
+<p>We list more than 70 framesets. Sort them by what they are for and the range becomes easy to remember.</p>
+<div class="scroll"><table>
+<tr><th>Purpose</th><th>Framesets</th></tr>
+<tr><td><b>Race all-rounder</b></td><td>Pinarello Dogma F, Cannondale SuperSix EVO, Merida Scultura, Cervélo R5 and Soloist, Look 785 Huez, Chapter2 HURU, SEKA Spear</td></tr>
+<tr><td><b>Aero</b></td><td>Cervélo S5, Look 795 Blade RS, Merida Reacto, Ridley Noah Fast, Quick Pro ER:ONE</td></tr>
+<tr><td><b>Endurance and all-road</b></td><td>Pinarello Dogma X and X9, Cannondale Synapse, Look 765 Optimum, Chapter2 TERE, Van Nicholas Yukon</td></tr>
+<tr><td><b>Gravel</b></td><td>Look 765 Gravel, Chapter2 AO, Merida Silex</td></tr>
+<tr><td><b>Aluminium race</b></td><td>Cannondale CAAD14</td></tr>
+<tr><td><b>TT and triathlon</b></td><td>Cervélo P5 and P-Series, Cannondale SuperSlice, Look 796 Monoblade RS, Quick Pro TT:ONE and TR:ONE</td></tr>
+<tr><td><b>Track</b></td><td>Look T20 and AL 464 P</td></tr>
+</table></div>
+<h3>Names worth knowing</h3>
+<ul>
+<li><b>Pinarello Dogma F</b> is the flagship race frame. <b>Dogma X</b> is the flagship endurance frame.</li>
+<li><b>Cervélo</b>: S5 is aero, R5 is the climbing frame, Soloist is the more affordable racer, P5 and P-Series are for time trial and triathlon.</li>
+<li><b>Look</b>: 795 is aero, 785 is climbing, 765 is endurance or gravel, 796 is time trial.</li>
+<li>Labels like <b>LAB71</b>, <b>RS</b> and <b>Team</b> mark the top carbon grade of that frame.</li>
+<li><b>Van Nicholas</b> frames are titanium. Titanium does not rust, rides smoothly and lasts for decades.</li>
+</ul>
+<h3>Track frames are different</h3>
+<p>A track frame is for the velodrome. It has one fixed gear and no brakes. Do not sell one for road use.</p>
+<h3>Colours</h3>
+<p>The same frame in a different colour is a separate listing on our site, sometimes at a different price. Confirm the exact colour with the customer and check that colour's stock.</p>`,
+takeaways:["Dogma F is race, Dogma X is endurance.","Cervélo: S5 aero, R5 climbing, Soloist value racer, P5 and P-Series TT and tri.","Look: 795 aero, 785 climbing, 765 endurance and gravel, 796 TT.","Track frames have a fixed gear and no brakes. Not for the road."],
+quiz:[
+{"q": "Which Cervélo frameset is the climbing frame?", "a": ["R5", "S5", "P5", "P-Series"], "why": "R5 is the climbing frame. S5 is aero. P5 and P-Series are TT and triathlon."},
+{"q": "A customer wants the Look T20 for daily road training. What do you say?", "a": ["It is a track frame with one fixed gear and no brakes, so it is not for the road", "It is an endurance frame and a good choice", "It is a gravel frame", "It only needs wider tyres"], "why": "The T20 and AL 464 P are velodrome frames."},
+{"q": "In Look's range, which number is the endurance and gravel family?", "a": ["765", "795", "785", "796"], "why": "795 is aero, 785 is climbing, 765 is endurance and gravel, 796 is time trial."},
+{"q": "A customer wants an aero race frameset from Look. Which one?", "a": ["795 Blade RS", "765 Optimum", "785 Huez", "AL 464 P"], "why": "795 is Look's aero family."},
+{"q": "What do labels like LAB71, RS and Team mean on a frameset?", "a": ["The top carbon grade of that frame", "A rim brake version", "An aluminium version", "A smaller size range"], "why": "They mark the highest-grade version of the frame."},
+{"q": "A customer sees the same frameset in two colours at two prices on our site. What is correct?", "a": ["Each colour is its own listing, so confirm the exact colour and check that colour's stock", "The price difference is a website error", "Colour never affects stock", "Only black frames are real stock"], "why": "Colours are separate listings and can differ in price and availability."},
+{"q": "Which Chapter2 frameset is the gravel frame?", "a": ["AO", "TERE", "HURU", "None, Chapter2 makes only road frames"], "why": "AO is gravel, TERE is all-road, HURU is the climbing frame."},
+{"q": "What is the Van Nicholas Yukon made from, and why does it matter?", "a": ["Titanium, which does not rust, rides smoothly and lasts for decades", "Carbon, which is the lightest", "Aluminium, which is the cheapest", "Steel, which is the heaviest"], "why": "Van Nicholas builds titanium frames."}
+]},
+
+/* ---------------- TT ---------------- */
+{id:"tt-basics",track:"tt",title:"TT and triathlon bikes: how they differ from road bikes",mins:5,
+body:`
+<p>A time trial or triathlon bike is built for one job: one rider, alone against the clock, holding a low aero position for a long time.</p>
+<h3>What is different</h3>
+<ul>
+<li><b>Cockpit</b>: a flat base bar with brake levers, plus forward extensions with elbow pads. The rider rests on the forearms.</li>
+<li><b>Steeper seat tube</b>: the saddle sits further forward than on a road bike. This keeps the hips open in the low position and saves the legs for the run in a triathlon.</li>
+<li><b>Aero tube shapes</b> and hidden cables.</li>
+<li><b>Storage</b>: triathlon bikes often have built-in boxes and hydration for food and water.</li>
+</ul>
+<h3>TT bike or triathlon bike</h3>
+<p>They look alike. A <b>TT bike</b> for road time trials has to follow cycling's UCI rules on frame shape and position. A <b>triathlon bike</b> does not, so it can carry more built-in storage and use frame shapes the rules would not allow. If a customer races both, check the frame is UCI-legal.</p>
+<h3>When the customer needs a road bike instead</h3>
+<ul>
+<li><b>Draft-legal triathlons</b> require a road bike. Long non-drafting events like Ironman allow triathlon bikes.</li>
+<li>Group rides. The brakes are on the base bar, away from the hands when the rider is on the extensions, so TT bikes are not safe in a bunch.</li>
+<li>A first bike. A TT bike is a second bike for someone who already rides.</li>
+</ul>
+<p>A cheaper way to start: clip-on aero bars on a road bike.</p>
+<h3>Fit decides the result</h3>
+<p>Most of the air resistance comes from the rider's body, not the bike. A good position is worth more than a more expensive frame. Always sell a TT or triathlon bike with a bike fit.</p>
+<h3>Why electronic shifting helps here</h3>
+<p>With Di2 or AXS the rider can shift from the extensions and from the base bar. With mechanical shifting the shifters are only on the extensions.</p>`,
+takeaways:["Base bar plus extensions, steeper seat tube, aero shapes, storage.","TT bikes follow UCI rules. Triathlon bikes do not have to.","Draft-legal races and group rides need a road bike.","The rider is most of the drag, so the bike fit matters most."],
+quiz:[
+{"q": "Why does a triathlon bike have a steeper seat tube than a road bike?", "a": ["It moves the rider forward and keeps the hips open in the aero position", "It makes the bike easier to pack", "It makes room for wider tyres", "It lowers the price"], "why": "The forward saddle position makes the low position sustainable."},
+{"q": "What is the rule difference between a TT bike and a triathlon bike?", "a": ["TT bikes must follow UCI rules. Triathlon bikes do not have to", "Triathlon bikes cannot have aero bars", "TT bikes must use rim brakes", "There is none"], "why": "Free of UCI limits, tri bikes can carry more storage and use other frame shapes."},
+{"q": "A customer is entering a draft-legal triathlon. Which bike does he need?", "a": ["A road bike", "A triathlon bike with full storage", "A track bike", "A TT bike"], "why": "Draft-legal races require road bikes."},
+{"q": "Why is a TT bike a poor choice for group rides?", "a": ["On the extensions the rider's hands are away from the brakes", "It has no gears", "It is too slow", "It cannot carry a bottle"], "why": "The brake levers are on the base bar."},
+{"q": "What gives a time trial rider the biggest gain?", "a": ["A well-fitted riding position", "A more expensive frame", "Lighter pedals", "A new paint job"], "why": "Most of the drag comes from the rider's body."},
+{"q": "What is the advantage of electronic shifting on a TT bike?", "a": ["The rider can shift from both the extensions and the base bar", "It makes the bike UCI-legal", "It removes the need for brakes", "It adds storage"], "why": "With mechanical shifting the shifters are only on the extensions."},
+{"q": "A customer races UCI time trials and also Ironman events on one bike. What must you check?", "a": ["That the frame is UCI-legal", "That it has the most storage", "That it has a drop bar", "That it has rim brakes"], "why": "A UCI-legal frame can be used in both. A non-UCI tri frame cannot race UCI time trials."},
+{"q": "What is the low-cost way to start time trialling?", "a": ["Clip-on aero bars on a road bike", "A track frameset", "A dual sport hybrid", "A second TT bike"], "why": "Clip-ons give an aero position without buying a TT bike."}
+]},
+
+{id:"tt-selling",track:"tt",title:"Our TT and tri range, and how to sell it",mins:5,
+body:`
+<h3>Complete bikes</h3>
+<div class="scroll"><table>
+<tr><th>Bike</th><th>What to know</th><th class="num">Listed from</th></tr>
+<tr><td>Ceepo Viper</td><td>From Ceepo, a Japanese triathlon-specialist brand. Ultegra Di2.</td><td class="num">₹3,50,000</td></tr>
+<tr><td>Merida Time Warp Tri 5000</td><td>Merida's triathlon bike.</td><td class="num">₹4,99,990</td></tr>
+<tr><td>Cervélo P-Series</td><td>Triathlon bike. 105 Di2 from ₹7,29,999, Ultegra Di2 from ₹9,25,999.</td><td class="num">₹7,29,999</td></tr>
+<tr><td>Trek Speed Concept SLR 7</td><td>Trek's TT and triathlon bike with Ultegra Di2.</td><td class="num">₹8,65,799</td></tr>
+</table></div>
+<p>Watch out: the <b>Ceepo Mamba-R</b> sits next to the Viper on our site but it is an aero road bike with drop bars, not a triathlon bike.</p>
+<h3>Framesets</h3>
+<p>Cervélo P5 and P-Series, Cannondale SuperSlice LAB71, Look 796 Monoblade RS, Quick Pro TT:ONE (time trial) and TR:ONE (triathlon).</p>
+${PRICE_NOTE}
+<h3>Questions to ask</h3>
+<ul>
+<li>Which event and what distance?</li>
+<li>Is it draft-legal? If yes, they need a road bike.</li>
+<li>Do you already own a road bike?</li>
+<li>Will you race UCI time trials too? Then the frame must be UCI-legal.</li>
+<li>How will you travel with the bike? Integrated cockpits take longer to pack.</li>
+</ul>
+<h3>What goes with the bike</h3>
+<ul>
+<li>A bike fit. Always.</li>
+<li>An indoor trainer for position practice. We are a Wahoo dealer.</li>
+<li>Tri suit and race kit from our triathlon wear range.</li>
+<li>Hydration, race wheels and a power meter for riders chasing a time.</li>
+</ul>
+<h3>Honest advice</h3>
+<p>If this would be the customer's only bike, sell a road bike and add clip-on bars. They will ride it more, and come back for the TT bike later.</p>`,
+takeaways:["Ceepo Viper is the lowest-priced complete tri bike. Speed Concept SLR 7 is the highest.","Ceepo Mamba-R is an aero road bike, not a tri bike.","Ask about draft-legal rules and UCI racing before recommending.","Always attach a bike fit. Offer a trainer, tri kit, hydration and wheels."],
+quiz:[
+{"q": "Which of these is an aero road bike, not a triathlon bike?", "a": ["Ceepo Mamba-R", "Ceepo Viper", "Cervélo P-Series", "Trek Speed Concept"], "why": "The Mamba-R has drop bars."},
+{"q": "Which is the lowest-priced complete triathlon bike we list?", "a": ["Ceepo Viper", "Merida Time Warp Tri 5000", "Cervélo P-Series", "Trek Speed Concept SLR 7"], "why": "The Viper is listed from ₹3,50,000."},
+{"q": "What should always be sold with a TT or triathlon bike?", "a": ["A bike fit", "A kickstand", "A suspension fork", "A second saddle"], "why": "Position decides the result."},
+{"q": "A customer says the TT bike will be his only bike and he also rides with a weekend group. What is the best advice?", "a": ["Buy a road bike and add clip-on aero bars", "Buy the TT bike and ride it in the group", "Buy a track frameset", "Buy two TT bikes"], "why": "A road bike is safer in a group and more useful day to day."},
+{"q": "Which Quick Pro frameset is for UCI time trials?", "a": ["TT:ONE", "TR:ONE", "ER:ONE", "None of them"], "why": "TT:ONE is time trial, TR:ONE is triathlon, ER:ONE is an aero road frame."},
+{"q": "Which is the highest-priced complete TT or triathlon bike in the lesson table?", "a": ["Trek Speed Concept SLR 7", "Cervélo P-Series 105 Di2", "Merida Time Warp Tri 5000", "Ceepo Viper"], "why": "Speed Concept SLR 7 is listed from ₹8,65,799."},
+{"q": "A customer has ₹5,50,000 for a complete triathlon bike. Which bikes fit the budget?", "a": ["Ceepo Viper and Merida Time Warp Tri 5000", "All four complete bikes", "Only the Trek Speed Concept", "Cervélo P-Series and Ceepo Viper"], "why": "Viper is from ₹3,50,000 and Time Warp Tri from ₹4,99,990. P-Series starts at ₹7,29,999."},
+{"q": "How would you describe Ceepo to a customer?", "a": ["A Japanese triathlon-specialist brand", "An Italian track brand", "A Trek sub-brand", "A wheel maker"], "why": "Ceepo is a Japanese brand focused on triathlon."}
+]}
+];
+
+const CH_EXTRA={"road":[
+{"q": "A customer has ₹3,50,000 and wants a Trek carbon race bike with mechanical shifting. Which model?", "a": ["Madone SL 5", "Madone SL 6", "Domane AL 5", "Madone SLR 7"], "why": "Madone SL 5 is carbon with mechanical 105, listed from ₹3,20,199."},
+{"q": "A rider struggles on ghats with 50/34 rings and an 11-28 cassette. Which change gives him an easier gear?", "a": ["Fit an 11-34 cassette", "Fit 52/36 chainrings", "Fit narrower tyres", "Fit an 11-25 cassette"], "why": "A bigger largest cog lowers the easiest gear. 52/36 would make it harder."},
+{"q": "Who is covered by Trek's lifetime frame warranty?", "a": ["The first owner, with the bike registered in their name", "Any later owner", "Only racers", "Only carbon bike owners for one year"], "why": "The lifetime warranty is for the original owner."},
+{"q": "Which bike has an aluminium frame and Shimano 105?", "a": ["Trek Domane AL 5", "Trek Domane SL 5", "Merida Scultura 4000", "Trek Madone SL 5"], "why": "Domane AL 5 is aluminium with 105. The others are carbon."}
+],"hybrid":[
+{"q": "Which customer should NOT be sold a hybrid?", "a": ["One who wants to ride rocky forest singletrack every weekend", "One who commutes 10 km on tarmac", "One returning to cycling for fitness", "One who wants a bike for errands and 30 km weekend rides"], "why": "Real trails need a mountain bike."},
+{"q": "How many shifters does a Trek FX 3 with its 1x10 drivetrain have?", "a": ["One", "Two", "Three", "None"], "why": "1x has no front derailleur, so there is only the rear shifter."},
+{"q": "A customer compares a Trek FX 3 and a Domane AL 2 at similar prices for 60 to 80 km group rides. Which do you recommend?", "a": ["Domane AL 2, because long, fast group rides suit an endurance road bike", "FX 3, because flat bars are faster", "Neither, he needs an MTB", "FX 3, because it has more gears"], "why": "Regular long, fast rides are road bike territory."},
+{"q": "At entry prices, why is a rigid fork with 40 mm tyres often better than a suspension fork?", "a": ["It is lighter, needs no fork service, and the tyres supply the comfort", "It gives more suspension travel", "It makes the brakes stronger", "It adds gears"], "why": "Entry suspension forks are heavy and need upkeep."}
+],"mtb":[
+{"q": "What wheel size does a Merida Big Seven have?", "a": ["27.5 inch", "29 inch", "26 inch", "700c"], "why": "Big Seven is 27.5. Big Nine is 29."},
+{"q": "A short rider is fitted to one of the smallest Trek Marlin frames. What should she expect about the wheels?", "a": ["Smaller wheels than the large frames, because Marlin matches wheel size to frame size", "29 inch wheels on every size", "Road wheels", "No difference from the largest size"], "why": "Smaller Marlin frames come with smaller wheels."},
+{"q": "When does a rider use fork lockout?", "a": ["On tarmac and smooth climbs, to stop the fork bobbing", "On rocky descents, for more travel", "When parking the bike", "To lower the saddle"], "why": "Lockout stiffens the fork where suspension only wastes energy."},
+{"q": "A customer wants Trek's cross-country race bike with rear suspension. Which model?", "a": ["Supercaliber", "Marlin 6", "Procaliber 8", "Domane SL 5"], "why": "Supercaliber is the XC race full-suspension bike. Procaliber is the race hardtail."}
+],"frameset":[
+{"q": "Why should a customer be measured or fitted before ordering a frameset?", "a": ["Parts can be swapped later, but the frame size cannot be changed", "Framesets come in one size", "The fit decides the colour", "A bigger frame is always faster"], "why": "Size is final."},
+{"q": "Before taking payment for a frameset held by the vendor, what must you confirm?", "a": ["That the size is in stock, and the lead time", "Nothing, every frameset is on our floor", "Only the colour name", "The customer's shoe size"], "why": "Many framesets are vendor-held."},
+{"q": "Which frameset is the aluminium race frame?", "a": ["Cannondale CAAD14", "Cannondale SuperSix EVO LAB71", "Cervélo S5", "Pinarello Dogma F"], "why": "CAAD is Cannondale's aluminium line."},
+{"q": "A customer wants Pinarello's top frame for racing. Which one?", "a": ["Dogma F", "Dogma X", "X9", "A Look 765 Optimum"], "why": "Dogma F is the race flagship. Dogma X and X9 are endurance."}
+],"tt":[
+{"q": "Why should you ask a triathlete how he travels with his bike?", "a": ["Integrated cockpits take longer to pack", "TT bikes cannot go in a bike box", "Airlines ban aero bars", "It decides the frame size"], "why": "Packing time and bike box choice matter with integrated cockpits."},
+{"q": "Which of these is NOT a TT or triathlon frameset?", "a": ["Cervélo S5", "Cervélo P5", "Cannondale SuperSlice", "Look 796 Monoblade RS"], "why": "The S5 is an aero road frame."},
+{"q": "How does the steep seat tube help a triathlete in particular?", "a": ["It saves the legs for the run", "It makes the swim faster", "It makes the bike lighter", "It allows wider tyres"], "why": "The forward position keeps the hips open and spares the running muscles."},
+{"q": "A customer will race UCI time trials. Which Quick Pro frameset do you offer?", "a": ["TT:ONE", "TR:ONE", "ER:ONE", "Any of the three"], "why": "TT:ONE is the time trial frame. TR:ONE is the triathlon frame."}
+]};
+
+/* ---------- config: the D Byk CRM Supabase project ---------- */
+const SB_URL="https://aysyrzzjyzzdunripoqr.supabase.co";
+const SB_KEY="sb_publishable_vV9MaLRM5B0DgZ-it_0DmQ_3iiHVcED";
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+const PLAY_ROLES=["staff","owner"];
+const CH_SIZE=12, CH_SECONDS=30;
+
+/* ---------- derived ---------- */
+const QUIZZES={};
+LESSONS.forEach(l=>{QUIZZES[l.id]={id:l.id,track:l.track,title:l.title,kind:"lesson",size:l.quiz.length};});
+TRACKS.forEach(t=>{QUIZZES["ch-"+t.id]={id:"ch-"+t.id,track:t.id,title:t.name+" challenge",kind:"challenge",size:CH_SIZE};});
+const passMark=n=>Math.ceil(n*0.8);
+const lessonsOf=t=>LESSONS.filter(l=>l.track===t);
+const MAX_POINTS=Object.values(QUIZZES).reduce((s,q)=>s+q.size,0);
+
+/* ---------- state ---------- */
+let me=null, people=[], results={}, quiz=null, booted=false, note="", tick=null;
+const canPlay=()=>!!me&&PLAY_ROLES.indexOf(me.role)>=0;
+function entry(u,q){return results[u+"_"+q]||{user_id:u,quiz:q,read:false,best:null,attempts:0};}
+function passed(u,q){const e=entry(u,q);return e.best!==null&&e.best>=passMark(QUIZZES[q].size);}
+function points(u){let s=0;Object.keys(QUIZZES).forEach(q=>{const e=entry(u,q);if(e.best!==null)s+=e.best;});return s;}
+function setNote(t){note=t;document.getElementById("sync").textContent=t;}
+
+async function loadResults(){
+  const r=await sb.from("academy_results").select("user_id,quiz,read,best,attempts");
+  if(r.error){setNote("Scores could not be loaded. Check your connection and reload.");return;}
+  const next={};
+  (r.data||[]).forEach(d=>{
+    if(!QUIZZES[d.quiz])return;
+    const size=QUIZZES[d.quiz].size;
+    next[d.user_id+"_"+d.quiz]={user_id:d.user_id,quiz:d.quiz,read:d.read===true,
+      best:(typeof d.best==="number"&&d.best>=0&&d.best<=size)?d.best:null,attempts:Number(d.attempts)||0};
+  });
+  results=next; setNote("");
+}
+async function loadAll(uid){
+  const p=await sb.from("profiles").select("id,name,role,store");
+  if(p.error){setNote("Your profile could not be loaded. Check your connection and reload.");return;}
+  me=(p.data||[]).find(x=>x.id===uid)||{id:uid,name:"",role:"",store:null};
+  people=(p.data||[]).filter(x=>PLAY_ROLES.indexOf(x.role)>=0);
+  await loadResults();
+}
+function record(q,patch){
+  const e=Object.assign(entry(me.id,q),patch); results[me.id+"_"+q]=e;
+  sb.from("academy_results").upsert({user_id:me.id,quiz:q,read:e.read,best:e.best,attempts:e.attempts,updated_at:new Date().toISOString()},{onConflict:"user_id,quiz"})
+    .then(r=>{if(r.error)setNote("That result could not be saved. Check your connection. It will not show on the scoreboard until it saves.");});
+}
+
+/* ---------- helpers ---------- */
+const app=document.getElementById("app");
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function shuffle(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function view(){const h=location.hash.replace(/^#/,"");
+  if(h==="scores")return{name:"scores"};
+  if(h.indexOf("lesson-")===0&&LESSONS.some(l=>l.id===h.slice(7)))return{name:"lesson",id:h.slice(7)};
+  if(h.indexOf("quiz-")===0&&QUIZZES[h.slice(5)])return{name:"quiz",id:h.slice(5)};
+  return{name:"home"};}
+function go(h){if(location.hash==="#"+h)render();else location.hash=h;}
+function stopTimer(){if(tick){clearInterval(tick);tick=null;}}
+function renderNav(){
+  document.getElementById("nav").innerHTML=me?
+    `<a class="btn small" href="#home">Lessons</a><a class="btn small" href="#scores">Scoreboard</a><button class="btn small" id="signout">${esc(me.name||"Account")} · Sign out</button>`:"";
+}
+
+/* ---------- views ---------- */
+function loginHtml(){
+  return `<div class="panel stack" style="max-width:420px">
+    <h1>Sign in</h1><p class="muted">Use the same email and password as the D Byk CRM.</p>
+    <form id="login" class="stack">
+      <label class="field">Email<input id="login-email" type="email" autocomplete="username" required></label>
+      <label class="field">Password<input id="login-password" type="password" autocomplete="current-password" required></label>
+      <p class="err" id="login-err" hidden></p>
+      <div><button class="btn primary" id="login-go" type="submit">Sign in</button></div>
+    </form></div>`;
+}
+function statusPill(q){
+  const e=entry(me.id,q), size=QUIZZES[q].size;
+  if(passed(me.id,q))return `<span class="pill good">Passed ${e.best}/${size}</span>`;
+  if(e.best!==null)return `<span class="pill warn">Best ${e.best}/${size}. ${QUIZZES[q].kind==="lesson"&&!e.read?"Read again to retry":"Try again"}</span>`;
+  if(e.read)return `<span class="pill open">Read. Quiz open</span>`;
+  return `<span class="pill">Not started</span>`;
+}
+function homeHtml(){
+  const done=LESSONS.filter(l=>passed(me.id,l.id)).length;
+  let h=`<div class="stack"><div class="panel stack"><p class="eyebrow">${esc(me.store||(me.role==="owner"?"Owner":""))}</p>
+    <h1>${esc(me.name)}, ${done===LESSONS.length?"every lesson is passed":"learn the range, then prove it"}</h1>
+    <p class="muted">${done} of ${LESSONS.length} lessons passed · ${points(me.id)} of ${MAX_POINTS} points. Read a lesson, then take its 8-question quiz. You need ${passMark(8)} right to pass. If you fail, the quiz locks until you read the lesson again.</p>
+    ${canPlay()?"":`<p class="err">This login can read the lessons, but quizzes are open to store managers and owners only.</p>`}</div>`;
+  TRACKS.forEach(t=>{
+    const ls=lessonsOf(t.id), nPass=ls.filter(l=>passed(me.id,l.id)).length, ch="ch-"+t.id, chOpen=canPlay()&&nPass===ls.length;
+    h+=`<section class="track"><div class="trackhead"><h2>${esc(t.name)}</h2>
+      <div class="meta"><div class="segs" aria-hidden="true">${ls.map(l=>`<i class="seg ${passed(me.id,l.id)?"on":""}"></i>`).join("")}</div><span class="sm muted">${nPass} of ${ls.length} passed</span></div></div><div class="rows">`;
+    ls.forEach(l=>{
+      const canQuiz=canPlay()&&entry(me.id,l.id).read;
+      h+=`<div class="row"><div class="info"><span class="title">${esc(l.title)}</span>
+        <span class="meta"><span class="sm muted">${l.mins} min read · ${l.quiz.length} questions</span>${statusPill(l.id)}</span></div>
+        <div class="acts"><a class="btn small" href="#lesson-${l.id}">Read</a>
+        ${canQuiz?`<a class="btn small primary" href="#quiz-${l.id}">Quiz</a>`:`<span class="btn small" aria-disabled="true" title="Read the lesson first">Quiz</span>`}</div></div>`;
+    });
+    h+=`<div class="row challenge"><div class="info"><span class="title">${esc(t.name)} challenge</span>
+        <span class="meta"><span class="sm muted">${CH_SIZE} questions · ${CH_SECONDS} seconds each · answers shown only at the end · ${passMark(CH_SIZE)} to pass</span>${entry(me.id,ch).best!==null?statusPill(ch):""}</span></div>
+        <div class="acts">${chOpen?`<a class="btn small primary" href="#quiz-${ch}">Start</a>`:`<span class="btn small" aria-disabled="true">Pass all ${ls.length} lessons to open</span>`}</div></div></div></section>`;
+  });
+  return h+`</div>`;
+}
+function lessonHtml(id){
+  const l=LESSONS.find(x=>x.id===id), t=TRACKS.find(x=>x.id===l.track);
+  return `<article class="lesson"><a href="#home" class="sm">← All lessons</a>
+    <div class="stack"><p class="eyebrow">${esc(t.name)} · ${l.mins} min read</p><h1>${esc(l.title)}</h1></div>
+    <div class="body">${l.body}</div>
+    <div class="takeaways"><h3>Remember these</h3><ul>${l.takeaways.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+    ${canPlay()?`<div class="panel stack"><p>Done reading? The quiz has ${l.quiz.length} questions on this lesson. You need ${passMark(l.quiz.length)} right to pass. If you fail, you come back here before the next try.</p>
+      <div><button class="btn primary" id="start-quiz" data-quiz="${l.id}">I have read it. Start the quiz</button></div></div>`:""}</article>`;
+}
+function prep(x){const order=shuffle(x.a.map((_,i)=>i));return{q:x.q,opts:order.map(i=>x.a[i]),correct:order.indexOf(0),why:x.why};}
+function startQuiz(id){
+  stopTimer();
+  const meta=QUIZZES[id]; let src;
+  if(meta.kind==="lesson")src=shuffle(LESSONS.find(l=>l.id===id).quiz);
+  else{const extra=CH_EXTRA[meta.track]||[], pool=shuffle(lessonsOf(meta.track).flatMap(l=>l.quiz)).slice(0,CH_SIZE-extra.length);src=shuffle(extra.concat(pool));}
+  quiz={id,qs:src.map(prep),i:0,score:0,picked:null,answers:[],done:false,timed:meta.kind==="challenge",left:CH_SECONDS};
+  if(quiz.timed)startTimer();
+}
+function startTimer(){
+  stopTimer(); quiz.left=CH_SECONDS;
+  tick=setInterval(()=>{
+    if(!quiz||quiz.done){stopTimer();return;}
+    quiz.left--;
+    if(quiz.left<=0){answer(-1);return;}
+    const t=document.getElementById("timer"); if(t){t.className="timer"+(quiz.left<=10?" low":"");t.querySelector("b").textContent=quiz.left+" s";t.querySelector("i").style.width=(quiz.left/CH_SECONDS*100)+"%";}
+  },1000);
+}
+function answer(idx){
+  if(!quiz||quiz.done||quiz.answers[quiz.i]!==undefined)return;
+  quiz.answers[quiz.i]=idx; if(idx===quiz.qs[quiz.i].correct)quiz.score++;
+  if(quiz.timed){advance();}else{quiz.picked=idx;app.innerHTML=quizHtml();const nx=document.getElementById("next");if(nx)nx.focus({preventScroll:true});}
+}
+function advance(){
+  if(quiz.i+1<quiz.qs.length){quiz.i++;quiz.picked=null;if(quiz.timed)startTimer();}
+  else finish();
+  app.innerHTML=quizHtml(); window.scrollTo(0,0);
+}
+function finish(){
+  stopTimer(); quiz.done=true;
+  const meta=QUIZZES[quiz.id], e=entry(me.id,quiz.id), ok=quiz.score>=passMark(quiz.qs.length);
+  const best=e.best===null?quiz.score:Math.max(e.best,quiz.score);
+  record(quiz.id,{best,attempts:e.attempts+1,read:meta.kind==="lesson"?(ok||passed(me.id,quiz.id)):true});
+}
+function quizHtml(){
+  const meta=QUIZZES[quiz.id], n=quiz.qs.length;
+  if(quiz.done){
+    const need=passMark(n), ok=quiz.score>=need, e=entry(me.id,quiz.id);
+    const wrong=quiz.qs.map((q,i)=>({q,i,a:quiz.answers[i]})).filter(x=>x.a!==x.q.correct);
+    const locked=meta.kind==="lesson"&&!e.read;
+    return `<div class="quiz"><p class="eyebrow">${esc(meta.title)}</p>
+      <div class="panel stack"><p class="score">${quiz.score}<span class="muted" style="font-size:1.2rem"> / ${n}</span></p>
+      <h2>${ok?"Passed":"Not passed"}</h2>
+      <p class="muted">${ok?(quiz.score===n?"Every answer right.":"You cleared the pass mark of "+need+"."):"You need "+need+" right to pass."} Your best so far is ${e.best}/${n}.${locked?" The quiz is locked until you read the lesson again.":""}</p>
+      <div class="meta">${locked?`<a class="btn primary" href="#lesson-${meta.id}">Read the lesson again</a>`:`<button class="btn ${ok?"":"primary"}" id="retry">Try again</button>`}
+        <a class="btn ${ok?"primary":""}" href="#home">Back to lessons</a></div></div>
+      ${wrong.length?`<h3>Review what you missed</h3><div class="review">${wrong.map(x=>`<div class="item"><b>${esc(x.q.q)}</b>
+        <span class="sm muted">Your answer: ${x.a===-1||x.a===undefined?"ran out of time":esc(x.q.opts[x.a])}</span>
+        <span class="sm">Correct: ${esc(x.q.opts[x.q.correct])}. ${esc(x.q.why)}</span></div>`).join("")}</div>`:""}</div>`;
+  }
+  const cur=quiz.qs[quiz.i], answered=quiz.picked!==null;
+  return `<div class="quiz">
+    <div class="stack"><p class="eyebrow">${esc(meta.title)} · Question ${quiz.i+1} of ${n}</p>
+    ${quiz.timed?`<div class="timer${quiz.left<=10?" low":""}" id="timer"><div class="qbar"><i style="width:${quiz.left/CH_SECONDS*100}%"></i></div><b>${quiz.left} s</b></div>`
+      :`<div class="qbar"><i style="width:${Math.round((quiz.i+(answered?1:0))/n*100)}%"></i></div>`}</div>
+    <p class="question">${esc(cur.q)}</p>
+    <div class="opts">${cur.opts.map((o,i)=>`<button class="opt ${answered&&i===cur.correct?"right":""} ${answered&&i===quiz.picked&&i!==cur.correct?"wrong":""}" id="opt-${i}" data-opt="${i}" ${answered?"disabled":""}>${esc(o)}</button>`).join("")}</div>
+    ${answered?`<div class="why ${quiz.picked===cur.correct?"ok":"no"}"><b>${quiz.picked===cur.correct?"Correct.":"Not quite."}</b> ${esc(cur.why)}</div>
+      <div><button class="btn primary" id="next">${quiz.i+1===n?"See my score":"Next question"}</button></div>`:""}
+  </div>`;
+}
+function scoresHtml(){
+  const shown=people.filter(p=>p.role==="staff"||Object.keys(QUIZZES).some(q=>results[p.id+"_"+q]));
+  const rows=shown.map(p=>({p,lp:LESSONS.filter(l=>passed(p.id,l.id)).length,cp:TRACKS.filter(t=>passed(p.id,"ch-"+t.id)).length,pts:points(p.id)}))
+    .sort((a,b)=>b.pts-a.pts||b.lp-a.lp);
+  let h=`<div class="stack"><div class="stack"><h1>Scoreboard</h1>
+    <p class="muted">Points are each person's best score on every quiz and challenge, added up. The most anyone can have is ${MAX_POINTS}.</p></div>`;
+  if(!rows.some(r=>r.pts>0))h+=`<div class="panel"><p>No quiz has been taken yet. Scores appear here as soon as someone finishes their first quiz.</p></div>`;
+  h+=`<div class="scroll"><table><tr><th>Name</th><th>Store</th><th class="num">Lessons passed</th><th class="num">Challenges passed</th><th class="num">Points</th></tr>
+    ${rows.map(r=>`<tr><td class="${r.p.id===me.id?"you":""}">${esc(r.p.name)}</td><td>${esc(r.p.store||"Owner")}</td><td class="num">${r.lp} / ${LESSONS.length}</td><td class="num">${r.cp} / ${TRACKS.length}</td><td class="num"><b>${r.pts}</b></td></tr>`).join("")}</table></div>`;
+  TRACKS.forEach(t=>{
+    const items=lessonsOf(t.id).map(l=>QUIZZES[l.id]).concat([QUIZZES["ch-"+t.id]]);
+    h+=`<h2>${esc(t.name)}</h2><div class="scroll"><table><tr><th>Quiz</th>${shown.map(p=>`<th class="num">${esc(p.name)}</th>`).join("")}</tr>
+      ${items.map(q=>`<tr><td>${esc(q.title)}</td>${shown.map(p=>{const e=entry(p.id,q.id);
+        return `<td class="num">${e.best!==null?`${e.best}/${q.size}${passed(p.id,q.id)?" ✓":""} <span class="muted">(${e.attempts})</span>`:(e.read?"read":"–")}</td>`;}).join("")}</tr>`).join("")}</table></div>`;
+  });
+  return h+`<p class="note">A tick means passed. The number in brackets is how many attempts it took. Owners appear once they start a lesson.</p></div>`;
+}
+
+/* ---------- render and events ---------- */
+let lastView="";
+function render(){
+  renderNav();
+  if(!booted){app.innerHTML=`<p class="muted">Loading…</p>`;return;}
+  if(!me){stopTimer();quiz=null;app.innerHTML=loginHtml();return;}
+  const v=view();
+  if(v.name==="quiz"){
+    const meta=QUIZZES[v.id];
+    const allowed=canPlay()&&(meta.kind==="lesson"?entry(me.id,v.id).read||(quiz&&quiz.id===v.id&&quiz.done):lessonsOf(meta.track).every(l=>passed(me.id,l.id)));
+    if(!allowed){go(meta.kind==="lesson"?"lesson-"+v.id:"home");return;}
+    if(!quiz||quiz.id!==v.id)startQuiz(v.id);
+    app.innerHTML=quizHtml();
+  }else{
+    stopTimer(); quiz=null;
+    app.innerHTML=v.name==="scores"?scoresHtml():v.name==="lesson"?lessonHtml(v.id):homeHtml();
+    if(v.name==="scores")loadResults().then(()=>{if(view().name==="scores"&&me)app.innerHTML=scoresHtml();});
+  }
+  const key=v.name+(v.id||"");
+  if(key!==lastView){window.scrollTo(0,0);lastView=key;}
+}
+document.addEventListener("submit",async ev=>{
+  if(ev.target.id!=="login")return;
+  ev.preventDefault();
+  const btn=document.getElementById("login-go"), err=document.getElementById("login-err");
+  btn.disabled=true; err.hidden=true;
+  const r=await sb.auth.signInWithPassword({email:document.getElementById("login-email").value.trim(),password:document.getElementById("login-password").value});
+  if(r.error){btn.disabled=false;err.textContent=/invalid/i.test(r.error.message)?"That email or password is not right. Use your CRM login.":"Could not sign in. Check your connection and try again.";err.hidden=false;return;}
+  await loadAll(r.data.user.id); render();
+});
+document.addEventListener("click",async ev=>{
+  const b=ev.target.closest("button"); if(!b)return;
+  if(b.id==="signout"){await sb.auth.signOut();me=null;results={};people=[];location.hash="home";render();return;}
+  if(b.id==="start-quiz"){const id=b.dataset.quiz;if(!entry(me.id,id).read)record(id,{read:true});quiz=null;go("quiz-"+id);return;}
+  if(b.dataset.opt!==undefined&&quiz&&!quiz.done){answer(Number(b.dataset.opt));return;}
+  if(b.id==="next"&&quiz){advance();return;}
+  if(b.id==="retry"&&quiz){startQuiz(quiz.id);app.innerHTML=quizHtml();window.scrollTo(0,0);return;}
+});
+window.addEventListener("hashchange",render);
+(async function boot(){
+  render();
+  try{const s=await sb.auth.getSession(); if(s.data&&s.data.session)await loadAll(s.data.session.user.id);}catch(e){setNote("Could not reach the server. Check your connection and reload.");}
+  booted=true; render();
+})();
+
+</script>
+</body></html>
