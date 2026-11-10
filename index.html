@@ -683,7 +683,7 @@ const CH_SIZE=12, CH_SECONDS=30;
 const QUIZZES={};
 LESSONS.forEach(l=>{QUIZZES[l.id]={id:l.id,track:l.track,title:l.title,kind:"lesson",size:l.quiz.length};});
 TRACKS.forEach(t=>{QUIZZES["ch-"+t.id]={id:"ch-"+t.id,track:t.id,title:t.name+" challenge",kind:"challenge",size:CH_SIZE};});
-const passMark=n=>Math.ceil(n*0.8);
+const passMark=n=>n; // every answer must be right
 const lessonsOf=t=>LESSONS.filter(l=>l.track===t);
 const MAX_POINTS=Object.values(QUIZZES).reduce((s,q)=>s+q.size,0);
 
@@ -758,7 +758,7 @@ function homeHtml(){
   const done=LESSONS.filter(l=>passed(me.id,l.id)).length;
   let h=`<div class="stack"><div class="panel stack"><p class="eyebrow">${esc(me.store||(me.role==="owner"?"Owner":""))}</p>
     <h1>${esc(me.name)}, ${done===LESSONS.length?"every lesson is passed":"learn it, then prove it"}</h1>
-    <p class="muted">${done} of ${LESSONS.length} lessons passed · ${points(me.id)} of ${MAX_POINTS} points. Read a lesson, then take its quiz. You need at least 80% right to pass. If you fail, the quiz locks until you read the lesson again.</p>
+    <p class="muted">${done} of ${LESSONS.length} lessons passed · ${points(me.id)} of ${MAX_POINTS} points. Read a lesson, then take its quiz. You need every answer right to pass. If you fail, the quiz locks until you read the lesson again.</p>
     ${canPlay()?"":`<p class="err">This login can read the lessons, but quizzes are open to store managers and owners only.</p>`}</div>`;
   TRACKS.forEach(t=>{
     const ls=lessonsOf(t.id), nPass=ls.filter(l=>passed(me.id,l.id)).length, ch="ch-"+t.id, chOpen=canPlay()&&nPass===ls.length;
