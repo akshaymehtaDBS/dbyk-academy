@@ -665,6 +665,7 @@ const SB_URL="https://aysyrzzjyzzdunripoqr.supabase.co";
 const SB_KEY="sb_publishable_vV9MaLRM5B0DgZ-it_0DmQ_3iiHVcED";
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 const PLAY_ROLES=["staff","owner"];
+const WATCH_ONLY=["Akshay"]; // on the scoreboard only after taking a quiz
 const CH_SIZE=12, CH_SECONDS=30;
 
 /* ---------- derived ---------- */
@@ -836,7 +837,7 @@ function quizHtml(){
   </div>`;
 }
 function scoresHtml(){
-  const shown=people.filter(p=>p.role==="staff"||Object.keys(QUIZZES).some(q=>results[p.id+"_"+q]));
+  const shown=people.filter(p=>WATCH_ONLY.indexOf(p.name)<0||Object.keys(QUIZZES).some(q=>results[p.id+"_"+q]));
   const rows=shown.map(p=>({p,lp:LESSONS.filter(l=>passed(p.id,l.id)).length,cp:TRACKS.filter(t=>passed(p.id,"ch-"+t.id)).length,pts:points(p.id)}))
     .sort((a,b)=>b.pts-a.pts||b.lp-a.lp);
   let h=`<div class="stack"><div class="stack"><h1>Scoreboard</h1>
@@ -850,7 +851,7 @@ function scoresHtml(){
       ${items.map(q=>`<tr><td>${esc(q.title)}</td>${shown.map(p=>{const e=entry(p.id,q.id);
         return `<td class="num">${e.best!==null?`${e.best}/${q.size}${passed(p.id,q.id)?" ✓":""} <span class="muted">(${e.attempts})</span>`:(e.read?"read":"–")}</td>`;}).join("")}</tr>`).join("")}</table></div>`;
   });
-  return h+`<p class="note">A tick means passed. The number in brackets is how many attempts it took. Owners appear once they start a lesson.</p></div>`;
+  return h+`<p class="note">A tick means passed. The number in brackets is how many attempts it took.</p></div>`;
 }
 
 /* ---------- render and events ---------- */
