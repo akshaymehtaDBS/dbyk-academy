@@ -126,6 +126,7 @@ html{margin:0}body{margin:0}
   <p class="note" id="sync"></p>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="dbyk-auth.js"></script>
 <script>
 const TRACKS=[
   {id:"road",name:"Road bikes"},
@@ -688,7 +689,7 @@ const CH_EXTRA={"events":[{"q": "A brevet rider's 600 km ride starts in 2 days a
 /* ---------- config: the D Byk CRM Supabase project ---------- */
 const SB_URL="https://aysyrzzjyzzdunripoqr.supabase.co";
 const SB_KEY="sb_publishable_vV9MaLRM5B0DgZ-it_0DmQ_3iiHVcED";
-const sb=window.supabase.createClient(SB_URL,SB_KEY);
+const sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{storage:window.dbykAuthStorage}});
 const PLAY_ROLES=["staff","owner"];
 const WATCH_ONLY=["Akshay"]; // on the scoreboard only after taking a quiz
 const CH_SIZE=12, CH_SECONDS=30;
