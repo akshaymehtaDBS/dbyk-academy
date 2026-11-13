@@ -756,6 +756,8 @@ const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",
 function shuffle(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
 function view(){const h=location.hash.replace(/^#/,"");
   if(h==="scores")return{name:"scores"};
+  if(h==="library")return{name:"library"};
+  if(h.indexOf("read-")===0&&inLibrary(h.slice(5)))return{name:"read",id:h.slice(5)};
   if(h.indexOf("lesson-")===0&&findLesson(h.slice(7))&&dailyLive(h.slice(7)))return{name:"lesson",id:h.slice(7)};
   if(h.indexOf("quiz-")===0&&QUIZZES[h.slice(5)]&&dailyLive(h.slice(5)))return{name:"quiz",id:h.slice(5)};
   return{name:"home"};}
@@ -763,7 +765,7 @@ function go(h){if(location.hash==="#"+h)render();else location.hash=h;}
 function stopTimer(){if(tick){clearInterval(tick);tick=null;}}
 function renderNav(){
   document.getElementById("nav").innerHTML=me?
-    `<a class="btn small" href="#home">Lessons</a><a class="btn small" href="#scores">Scoreboard</a><button class="btn small" id="signout">${esc(me.name||"Account")} · Sign out</button>`:"";
+    `<a class="btn small" href="#home">Lessons</a><a class="btn small" href="#library">Library</a><a class="btn small" href="#scores">Scoreboard</a><button class="btn small" id="signout">${esc(me.name||"Account")} · Sign out</button>`:"";
 }
 
 /* ---------- views ---------- */
@@ -819,6 +821,30 @@ function homeHtml(){
         <div class="acts">${chOpen?`<a class="btn small primary" href="#quiz-${ch}">Start</a>`:`<span class="btn small" aria-disabled="true">Pass all ${ls.length} lessons to open</span>`}</div></div></div></section>`;
   });
   return h+`</div>`;
+}
+/* ---------- library: every lesson and past daily brief, to read again or download ---------- */
+const pdfUrl=id=>"pdf/"+id+".pdf";
+function inLibrary(id){const l=findLesson(id);return !!l&&(!l.date||l.date<=todayIST());}
+function libRow(l,sub){
+  return `<div class="row"><div class="info"><span class="title">${esc(l.title)}</span><span class="sm muted">${esc(sub)} · ${l.mins} min read</span></div>
+    <div class="acts"><a class="btn small" href="#read-${l.id}">Read</a><a class="btn small primary" href="${pdfUrl(l.id)}" download="${esc(l.title)}.pdf">PDF</a></div></div>`;
+}
+function libraryHtml(){
+  const dl=DAILY.filter(l=>l.date<=todayIST()).sort((a,b)=>a.date<b.date?1:-1);
+  let h=`<div class="stack"><div class="stack"><h1>Library</h1>
+    <p class="muted">Every lesson and daily brief, to read again or download as a PDF. This is the reading only. Quizzes stay under Lessons.</p></div>`;
+  if(dl.length)h+=`<section class="track"><h2>Daily quizzes</h2><div class="rows">${dl.map(l=>libRow(l,niceDate(l.date))).join("")}</div></section>`;
+  TRACKS.forEach(t=>{const ls=lessonsOf(t.id);if(ls.length)h+=`<section class="track"><h2>${esc(t.name)}</h2><div class="rows">${ls.map(l=>libRow(l,t.name)).join("")}</div></section>`;});
+  return h+`</div>`;
+}
+function readHtml(id){
+  const l=findLesson(id), t=TRACKS.find(x=>x.id===l.track)||{name:"Daily quiz · "+niceDate(l.date)};
+  const pdf=`<a class="btn primary" href="${pdfUrl(l.id)}" download="${esc(l.title)}.pdf">Download PDF</a>`;
+  return `<article class="lesson"><a href="#library" class="sm">← Library</a>
+    <div class="stack"><p class="eyebrow">${esc(t.name)} · ${l.mins} min read</p><h1>${esc(l.title)}</h1><div>${pdf}</div></div>
+    <div class="body">${l.body}</div>
+    <div class="takeaways"><h3>Remember these</h3><ul>${l.takeaways.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+    <div class="meta">${pdf}<a class="btn" href="#library">Back to Library</a></div></article>`;
 }
 function lessonHtml(id){
   const l=findLesson(id), t=TRACKS.find(x=>x.id===l.track)||{name:"Today's quiz · "+niceDate(l.date)};
@@ -930,7 +956,7 @@ function render(){
     app.innerHTML=quizHtml();
   }else{
     stopTimer(); quiz=null;
-    app.innerHTML=v.name==="scores"?scoresHtml():v.name==="lesson"?lessonHtml(v.id):homeHtml();
+    app.innerHTML=v.name==="scores"?scoresHtml():v.name==="library"?libraryHtml():v.name==="read"?readHtml(v.id):v.name==="lesson"?lessonHtml(v.id):homeHtml();
     if(v.name==="scores")loadResults().then(()=>{if(view().name==="scores"&&me)app.innerHTML=scoresHtml();});
   }
   const key=v.name+(v.id||"");
