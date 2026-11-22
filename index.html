@@ -2,28 +2,20 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
+<meta name="theme-color" content="#1A1D1F">
 <title>D Byk Product Academy</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
 /* Layout: one reading column (max 760px). Home is a list of lesson rows grouped by category; lesson and quiz are single-focus screens. */
 :root{
-  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#131A2A; --muted:#566178; --line:#D9DEE8;
-  --accent:#1F4FD8; --accent-ink:#FFFFFF; --accent-soft:#E6ECFC;
-  --good:#17804A; --good-soft:#E2F4EA; --bad:#C0352B; --bad-soft:#FBE7E5; --warn:#9A5B00; --warn-soft:#FBEFD9;
-  --display:"Space Grotesk","Segoe UI",system-ui,sans-serif;
-  --body:"Inter","Segoe UI",system-ui,sans-serif;
+  /* shared tokens: dbyk-hub/DESIGN.md — Academy accent is purple */
+  --bg:#F4F3EF; --surface:#FFFFFF; --ink:#1A1D1F; --muted:#5B6067; --line:#E2DFD7;
+  --accent:#6B3FC0; --accent-ink:#FFFFFF; --accent-soft:#EEE7FA;
+  --good:#17663A; --good-soft:#E3F1E8; --bad:#B42318; --bad-soft:#FBE7E5; --warn:#B4430C; --warn-soft:#FBEBDC;
+  --display:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --r:10px;
 }
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#0F131C; --surface:#181E2B; --ink:#E9ECF3; --muted:#9BA5B9; --line:#2B3345;
-  --accent:#86A6FF; --accent-ink:#0F131C; --accent-soft:#1E2A4A;
-  --good:#5CC88A; --good-soft:#15301F; --bad:#FF8377; --bad-soft:#3A1B18; --warn:#F0B354; --warn-soft:#33270F;
-  color-scheme:dark } }
-:root[data-theme="dark"]{
-  --bg:#0F131C; --surface:#181E2B; --ink:#E9ECF3; --muted:#9BA5B9; --line:#2B3345;
-  --accent:#86A6FF; --accent-ink:#0F131C; --accent-soft:#1E2A4A;
-  --good:#5CC88A; --good-soft:#15301F; --bad:#FF8377; --bad-soft:#3A1B18; --warn:#F0B354; --warn-soft:#33270F;
-  color-scheme:dark }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
   padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:20px 56px}
@@ -33,7 +25,14 @@ h1{font-size:1.7rem;font-weight:700} h2{font-size:1.25rem;font-weight:600} h3{fo
 p{margin:0}
 a{color:var(--accent)}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.top{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.top{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;
+  /* dark full-width bar, same as Hisab, CRM and Service */
+  background:#1A1D1F;color:#F4F3EF;margin:-20px calc(50% - 50vw) 0;padding:10px max(16px, calc(50vw - 380px))}
+html{overflow-x:clip}
+.top .brand{color:#F4F3EF} .top .brand span{color:#C4B0F0}
+.top .btn{background:transparent;border-color:#5A5E64;color:#F4F3EF}
+.top .btn:hover{background:#2C3038;border-color:#8A8D92}
+.dbyk-embedded #signout{display:none}
 .brand{font-family:var(--display);font-weight:700;font-size:1.05rem;color:var(--ink);text-decoration:none}
 .brand span{color:var(--accent)}
 .nav{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -91,7 +90,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
 .opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
 .why{border-left:4px solid var(--line);padding:4px 0 4px 12px}
 .why.ok{border-color:var(--good)} .why.no{border-color:var(--bad)}
-.score{font-family:var(--display);font-size:2.6rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.score{font-family:"IBM Plex Mono",monospace;font-size:2.6rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
 .note{font-size:.85rem;color:var(--muted)}
 .you{color:var(--accent);font-weight:600}
 html{margin:0}body{margin:0}
