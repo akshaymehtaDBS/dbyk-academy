@@ -71,7 +71,9 @@
   window.dbykAuthStorage = { getItem: getItem, setItem: setItem, removeItem: removeItem };
 
   // When this app is open inside the D Byk Hub, Alt+1..4 switches apps there too.
+  // It also marks the page so each app can hide its own Log out (the hub has one for all apps).
   if (window.parent !== window) {
+    document.documentElement.classList.add('dbyk-embedded');
     document.addEventListener('keydown', function (e) {
       var m = /^Digit([1-9])$/.exec(e.code);
       if (!m || !e.altKey || e.ctrlKey || e.metaKey) return;
