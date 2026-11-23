@@ -33,6 +33,7 @@ html{overflow-x:clip}
 .top .btn{background:transparent;border-color:#5A5E64;color:#F4F3EF}
 .top .btn:hover{background:#2C3038;border-color:#8A8D92}
 .dbyk-embedded #signout{display:none}
+.dbyk-embedded .top .brand{display:none}
 .brand{font-family:var(--display);font-weight:700;font-size:1.05rem;color:var(--ink);text-decoration:none}
 .brand span{color:var(--accent)}
 .nav{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -42,7 +43,8 @@ html{overflow-x:clip}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .btn.small{min-height:38px;padding:6px 12px;font-size:.88rem}
 .btn[aria-disabled="true"],.btn:disabled{opacity:.5;cursor:not-allowed}
-.eyebrow{font:600 .75rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.eyebrow{font:500 .88rem var(--body);color:var(--muted)}
+p.small{font-size:.9rem}
 .muted{color:var(--muted)} .sm{font-size:.88rem}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
 .stack{display:flex;flex-direction:column;gap:12px}
@@ -792,9 +794,10 @@ function statusPill(q){
 }
 function homeHtml(){
   const done=LESSONS.filter(l=>passed(me.id,l.id)).length;
-  let h=`<div class="stack"><div class="panel stack"><p class="eyebrow">${esc(me.store||(me.role==="owner"?"Owner":""))}</p>
-    <h1>${esc(me.name)}, ${done===LESSONS.length?"every lesson is passed":"learn it, then prove it"}</h1>
-    <p class="muted">${done} of ${LESSONS.length} lessons passed · ${points(me.id)} of ${MAX_POINTS} points. Pick a course below, read a lesson, then take its quiz. You need every answer right to pass. If you fail, the quiz locks until you read the lesson again.</p>
+  let h=`<div class="stack"><div class="panel stack">
+    <h1>${esc(me.name)}</h1>
+    <p><b>${done} of ${LESSONS.length}</b> lessons passed · <b>${points(me.id)}</b> of ${MAX_POINTS} points</p>
+    <p class="muted small">Read a lesson, then take its quiz. Every answer must be right to pass; a failed quiz opens again after you re-read the lesson.</p>
     ${canPlay()?"":`<p class="err">This login can read the lessons, but quizzes are open to store managers and owners only.</p>`}</div>`;
   const today=DAILY.filter(isLive);
   if(today.length){
